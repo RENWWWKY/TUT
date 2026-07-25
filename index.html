@@ -1248,6 +1248,111 @@ body, html {
 .splash-text-title { color: var(--ink); font-size: 28px !important; line-height: 1 !important; }
 .splash-text-sub { color: var(--ink); font-size: 12px !important; line-height: 1 !important; }
 .splash-progress-track { width: 120px !important; }
+
+/* =========================================
+   【纯净计划 10】剥离 JS 内联样式专用类
+   ========================================= */
+
+/* 1. 双语翻译框 */
+.bilingual-trans.hidden-trans {
+    display: none;
+    margin-top: 12px;
+    font-size: 0.88em;
+    opacity: 0.65;
+    letter-spacing: 0.02em;
+}
+
+/* 2. 聊天气泡内嵌入的表情包图片 */
+.bubble-inline-sticker {
+    width: 80px !important;
+    height: 80px !important;
+    object-fit: contain !important;
+    background: white !important;
+    border-radius: 8px !important;
+}
+
+/* 3. 强制剥夺底色的特殊消息类型卡片 */
+.msg-type-diary-invite, 
+.msg-type-survey-reply, 
+.msg-type-survey, 
+.msg-type-fake-img {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* 4. 取消首行缩进（针对假图等卡片文本） */
+.no-indent { 
+    text-indent: 0 !important; 
+}
+
+/* 5. 阻断弹窗内容滚动透传到底层 (红包面板专用) */
+.overscroll-contain-touch {
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* =========================================
+   【纯净计划 12】终极抗卡顿补丁 (GPU 硬件加速)
+   ========================================= */
+
+/* 1. 开启 GPU 加速：强制把毛玻璃头部和底部分配到独立显卡图层 */
+.chat-header-base, .chat-footer-base, .chat-room-header {
+    transform: translateZ(0) !important; 
+    will-change: transform, opacity;
+}
+
+/* 2. 解决滑动掉帧的终极元凶：强制固定背景，防止背景跟着滑动疯狂重绘 */
+.tm-texture-dots, .tm-texture-dots-sm, .tm-texture-lines, .diary-texture-lines {
+    background-attachment: fixed !important; 
+}
+
+/* 3. 聊天滑动区性能优化：保持 iOS 与安卓的丝滑回弹 */
+#chat-messages-container, .custom-scrollbar {
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-overflow-scrolling: touch !important; 
+    will-change: scroll-position;
+}
+
+/* =========================================
+   【极致流畅计划 1】彻底干掉费性能的点阵背景
+   ========================================= */
+.tm-texture-dots, .tm-texture-dots-sm {
+    background-image: none !important;
+}
+
+/* =========================================
+   【极致流畅计划 2】全新纯净版 App 开关动画
+   ========================================= */
+div[id^="app-"], 
+div[id$="-modal"] {
+    /* 抛弃耗性能的缩放，只保留最纯粹的位移和透明度，0.3秒极致丝滑 */
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease-out !important;
+    /* 强制要求手机分配独立图层进行硬件加速 */
+    will-change: transform, opacity;
+}
+
+/* 修复聊天内页背景，给一个干净的高级灰白底色，不瞎眼 */
+#chat-messages-container {
+    background-color: var(--bg-paper) !important;
+}
+
+/* =========================================
+   【极致流畅计划 3】清理 HTML 残留内联样式
+   ========================================= */
+.preview-ta-base {
+    background-color: white !important; 
+    color: var(--ink) !important; 
+    border: 1px solid var(--ink-light) !important; 
+    border-radius: 12px 12px 12px 2px !important;
+}
+.preview-my-base {
+    background-color: var(--ink) !important; 
+    color: var(--bg-paper) !important; 
+    border-radius: 12px 12px 2px 12px !important;
+}
+
 </style>
 
     <!-- =========================================================
@@ -1316,19 +1421,19 @@ body, html {
         </div>
         
         <!-- 点击解锁按钮 -->
-        <div class="relative cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="unlockScreen()">
-            <div class="sketch-box shape-1 border-solid px-6 py-2 flex flex-col items-center">
+        <div class="relative cursor-pointer  active:scale-95 transition-transform" onclick="unlockScreen()">
+            <div class="rounded-2xl shadow-sm border-solid px-6 py-2 flex flex-col items-center">
                 <p class="text-lg tracking-widest">点 击 解 锁</p>
             </div>
-            <div class="sketch-shadow shape-1"></div>
+            
         </div>
 
         <!-- 密码/问题安全验证模块 (默认隐藏) -->
         <div id="lock-auth-container" class="flex flex-col items-center space-y-4 hidden mt-6">
             <p id="lock-question-text" class="text-sm font-bold hidden"></p>
-            <input type="password" id="lock-input-password" class="p-2 sketch-box shape-2 bg-white/80 outline-none text-sm text-center border-solid hidden border-ink-1" placeholder="输入密码">
-            <input type="text" id="lock-input-answer" class="p-2 sketch-box shape-3 bg-white/80 outline-none text-sm text-center border-solid hidden border-ink-1" placeholder="输入答案">
-            <button onclick="verifyUnlock()" class="sketch-box shape-1 px-6 py-2 font-bold active:scale-95 transition-transform bg-white/90">确认解锁</button>
+            <input type="password" id="lock-input-password" class="p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm text-center border-solid hidden border-ink-1" placeholder="输入密码">
+            <input type="text" id="lock-input-answer" class="p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm text-center border-solid hidden border-ink-1" placeholder="输入答案">
+            <button onclick="verifyUnlock()" class="rounded-2xl shadow-sm px-6 py-2 font-bold active:scale-95 transition-transform bg-white/90">确认解锁</button>
         </div>
     </div>
     <!-- =========================================================
@@ -1345,44 +1450,76 @@ body, html {
         <!-- 核心内容区 (纯净不分页，直接上下排列) -->
         <div class="flex-1 w-full flex flex-col px-6 pt-6 pointer-events-auto">
             
-            <!-- 🌟 1. 高自由度万能小组件 🌟 -->
-            <div id="home-custom-widget" class="home-widget-base mb-10" onclick="window.openWidgetEditor()">
-                <div id="widget-content" class="widget-content-base">
-                    <!-- 这里的内容由 JS 注入，默认是一段提示 -->
-                    <span class="text-[10px] opacity-50 tracking-widest">[ 点 击 设 定 小 组 件 ]</span>
+            <!-- 🌟 1. 绝美相册小组件 (单图/三图拼贴无缝切换) 🌟 -->
+            <div id="home-custom-widget" class="w-full h-[160px] rounded-[20px] mb-10 relative overflow-hidden bg-white/40 shadow-sm border border-white/50 group flex-shrink-0 transition-transform active:scale-[0.98]">
+                
+                <!-- 右上角：布局切换按钮 -->
+                <button onclick="window.toggleWidgetMode(event)" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white flex items-center justify-center z-30 opacity-80 hover:opacity-100 transition-opacity shadow-sm border border-white/20">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="9" y1="12" x2="21" y2="12"></line></svg>
+                </button>
+
+                <!-- 模式 1: 单张全屏大图 -->
+                <div id="widget-mode-single" class="absolute inset-0 w-full h-full transition-opacity duration-300">
+                    <div class="w-full h-full relative cursor-pointer" onclick="window.triggerWidgetUpload(0)">
+                        <img id="widget-img-0" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                        <div id="widget-place-0" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold tracking-widest opacity-40 text-ink bg-black/5">+ 点击设置单图</div>
+                    </div>
                 </div>
+
+                <!-- 模式 2: 左1右2 精致三拼图 -->
+                <div id="widget-mode-split" class="absolute inset-0 w-full h-full hidden flex gap-1 p-1 bg-white/30 transition-opacity duration-300">
+                    <!-- 左侧大图 -->
+                    <div class="w-2/3 h-full relative cursor-pointer bg-black/5 rounded-l-[16px] overflow-hidden" onclick="window.triggerWidgetUpload(1)">
+                        <img id="widget-img-1" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                        <div id="widget-place-1" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold opacity-30 text-ink">+ 图 1</div>
+                    </div>
+                    <!-- 右侧两小图 -->
+                    <div class="w-1/3 h-full flex flex-col gap-1">
+                        <div class="h-1/2 w-full relative cursor-pointer bg-black/5 rounded-tr-[16px] overflow-hidden" onclick="window.triggerWidgetUpload(2)">
+                            <img id="widget-img-2" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="widget-place-2" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold opacity-30 text-ink">+ 图 2</div>
+                        </div>
+                        <div class="h-1/2 w-full relative cursor-pointer bg-black/5 rounded-br-[16px] overflow-hidden" onclick="window.triggerWidgetUpload(3)">
+                            <img id="widget-img-3" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            <div id="widget-place-3" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold opacity-30 text-ink">+ 图 3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 隐藏的图片上传通道 -->
+                <input type="file" id="widget-file-upload" accept="image/*" class="hidden" onchange="window.handleWidgetUpload(event)">
             </div>
 
             <!-- 🌟 2. 合并后的六个 App 图标 (两行三列) 🌟 -->
             <div class="w-full grid grid-cols-3 gap-y-10 gap-x-4 place-items-center mt-2">
                 <!-- 通讯 -->
-                <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('chat')">
-                    <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-1 border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-groupChat"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><img id="icon-img-groupChat" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-1"></div></div>
+                <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('chat')">
+                    <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-groupChat"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><img id="icon-img-groupChat" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                     <span class="text-sm font-bold mt-1">通讯</span>
                 </div>
                 <!-- 日记本 -->
-                <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('diary')">
-                    <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-2 border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-diary"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><img id="icon-img-diary" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-2"></div></div>
+                <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('diary')">
+                    <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-diary"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><img id="icon-img-diary" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                     <span class="text-sm font-bold mt-1">日记本</span>
                 </div>
                 <!-- 时光机 -->
-                <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('timeMachine')">
-                    <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-2 border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-timeMachine"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><img id="icon-img-timeMachine" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-2"></div></div>
+                <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('timeMachine')">
+                    <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-timeMachine"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><img id="icon-img-timeMachine" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                     <span class="text-sm font-bold mt-1">时光机</span>
                 </div>
                 <!-- 档案 -->
-                <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('archives')">
-                    <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-1 w-full h-full flex justify-center items-center text-xl relative" id="icon-box-archives"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg><img id="icon-img-archives" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-1"></div></div>
+                <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('archives')">
+                    <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm w-full h-full flex justify-center items-center text-xl relative" id="icon-box-archives"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg><img id="icon-img-archives" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                     <span class="text-sm font-bold mt-1">档案</span>
                 </div>
                 <!-- 指令集 -->
-                <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('commands')">
-                    <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-2 border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-commands"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><img id="icon-img-commands" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-2"></div></div>
+                <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('commands')">
+                    <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-commands"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><img id="icon-img-commands" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                     <span class="text-sm font-bold mt-1">指令集</span>
                 </div>
                 <!-- 美化 -->
-                <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('theme')">
-                    <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-1 w-full h-full flex justify-center items-center text-xl relative" id="icon-box-theme"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg><img id="icon-img-theme" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-1"></div></div>
+                <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('theme')">
+                    <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm w-full h-full flex justify-center items-center text-xl relative" id="icon-box-theme"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg><img id="icon-img-theme" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                     <span class="text-sm font-bold mt-1">美化</span>
                 </div>
             </div>
@@ -1390,56 +1527,100 @@ body, html {
 
         <!-- 底部 Dock 栏 (只保留设置) -->
         <div class="w-full flex justify-center gap-x-12 shrink-0 pt-4 px-8 relative border-t border-light-1 pointer-events-auto">
-            <div class="flex flex-col items-center cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="openApp('settings')">
-                <div class="relative w-14 h-14 mb-2"><div class="sketch-box shape-3 border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-settings"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><img id="icon-img-settings" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div><div class="sketch-shadow shape-3"></div></div>
+            <div class="flex flex-col items-center cursor-pointer  active:scale-95 transition-transform" onclick="openApp('settings')">
+                <div class="relative w-14 h-14 mb-2"><div class="rounded-2xl shadow-sm border-solid w-full h-full flex justify-center items-center text-xl relative" id="icon-box-settings"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><img id="icon-img-settings" class="hidden absolute inset-0 w-full h-full object-cover" style="border-radius: inherit;" src=""></div></div>
                 <span class="text-sm font-bold mt-1 opacity-80">设置</span>
             </div>
         </div>
     </div>
 
-    <!-- 桌面小组件专属编辑器弹窗 (点小组件直接滑出) -->
-    <div id="widget-editor-modal" class="absolute inset-0 bg-black/40 backdrop-blur-sm z-[200] hidden flex flex-col items-center justify-center px-6 transition-opacity">
-        <div class="sketch-box shape-2 bg-[var(--bg-paper)] p-6 w-full max-w-[20rem] flex flex-col shadow-2xl border-solid border-ink-1">
-            <h3 class="font-bold text-sm mb-4 border-b pb-2 tracking-widest text-center border-light-1">构建你的小组件</h3>
-            <p class="text-[10px] opacity-60 mb-2">在此填入纯 HTML 代码，并通过"美化中心-自定义CSS"为其绘制样式。</p>
-            <textarea id="widget-html-input" class="w-full h-40 bg-white/50 p-2 outline-none text-[10px] font-mono border border-solid custom-scrollbar mb-4 border-ink-1" placeholder="<div class='my-card'>\n  <img src='...'/>\n  <p>自定义文字</p>\n</div>"></textarea>
-            <div class="flex space-x-3">
-                <button onclick="document.getElementById('widget-editor-modal').classList.add('hidden')" class="flex-1 py-2 border text-xs font-bold bg-white/50 active:scale-95 border-ink">取 消</button>
-                <button onclick="window.saveCustomWidget()" class="flex-1 py-2 border text-xs font-bold text-[var(--bg-paper)] bg-[var(--ink)] active:scale-95 border-ink">保 存 并 渲 染</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 小组件驱动引擎 -->
+    <!-- 🌟 新版相册小组件驱动引擎 🌟 -->
     <script>
-        window.openWidgetEditor = function() {
-            const savedHtml = localStorage.getItem('oc_phone_custom_widget') || '';
-            document.getElementById('widget-html-input').value = savedHtml;
-            document.getElementById('widget-editor-modal').classList.remove('hidden');
+        window.currentWidgetMode = localStorage.getItem('oc_phone_widget_mode') || 'single';
+        window.currentUploadTarget = 0;
+
+        // 1. 切换排版布局 (单图/三图)
+        window.toggleWidgetMode = function(e) {
+            e.stopPropagation(); 
+            window.currentWidgetMode = window.currentWidgetMode === 'single' ? 'split' : 'single';
+            localStorage.setItem('oc_phone_widget_mode', window.currentWidgetMode);
+            window.renderWidgetMode();
         };
-        window.saveCustomWidget = function() {
-            const html = document.getElementById('widget-html-input').value;
-            localStorage.setItem('oc_phone_custom_widget', html);
-            
-            const widgetEl = document.getElementById('home-custom-widget');
-            if (html.trim() !== '') {
-                document.getElementById('widget-content').innerHTML = html;
-                widgetEl.style.border = 'none'; // 如果有内容，拔掉虚线框
+
+        // 2. 渲染当前视图
+        window.renderWidgetMode = function() {
+            const single = document.getElementById('widget-mode-single');
+            const split = document.getElementById('widget-mode-split');
+            if (window.currentWidgetMode === 'single') {
+                single.classList.remove('hidden');
+                split.classList.add('hidden');
             } else {
-                document.getElementById('widget-content').innerHTML = '<span class="text-[10px] opacity-50 tracking-widest">[ 点 击 设 定 小 组 件 ]</span>';
-                widgetEl.style.border = '1px dashed var(--ink-light)';
+                single.classList.add('hidden');
+                split.classList.remove('hidden');
             }
-            document.getElementById('widget-editor-modal').classList.add('hidden');
         };
-        
-        // 开机时静默加载小组件
-        setTimeout(() => {
-            const savedHtml = localStorage.getItem('oc_phone_custom_widget');
-            const widgetEl = document.getElementById('home-custom-widget');
-            if (savedHtml && savedHtml.trim() !== '') {
-                document.getElementById('widget-content').innerHTML = savedHtml;
-                if(widgetEl) widgetEl.style.border = 'none';
+
+        // 3. 点击触发文件上传框
+        window.triggerWidgetUpload = function(targetIdx) {
+            window.currentUploadTarget = targetIdx;
+            document.getElementById('widget-file-upload').click();
+        };
+
+        // 4. 图片自动压缩与无缝保存
+        window.handleWidgetUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = async function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width; let height = img.height;
+                    
+                    // 小组件不需要超大图，压缩到 800px 保证绝对流畅！
+                    if (width > 800) { height = Math.round(height * 800 / width); width = 800; }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.8); // 80% 高画质压缩
+
+                    // 读取底层数据库并存入 (0是单图，1/2/3是拼图格子)
+                    let imgs = await window.getFromDB('oc_phone_widget_images') || {};
+                    imgs[window.currentUploadTarget] = base64;
+                    await window.saveToDB('oc_phone_widget_images', imgs);
+                    
+                    window.renderWidgetImages(imgs);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = ''; 
+        };
+
+        // 5. 将数据库里的图片渲染到桌面上
+        window.renderWidgetImages = async function(imgsCache) {
+            let imgs = imgsCache || await window.getFromDB('oc_phone_widget_images') || {};
+            for (let i = 0; i <= 3; i++) {
+                const imgEl = document.getElementById('widget-img-' + i);
+                const placeEl = document.getElementById('widget-place-' + i);
+                if (imgEl && placeEl) {
+                    if (imgs[i]) {
+                        imgEl.src = imgs[i];
+                        imgEl.classList.remove('hidden');
+                        placeEl.classList.add('hidden');
+                    } else {
+                        imgEl.src = '';
+                        imgEl.classList.add('hidden');
+                        placeEl.classList.remove('hidden');
+                    }
+                }
             }
+        };
+
+        // 6. 开机静默加载
+        setTimeout(async () => {
+            window.renderWidgetMode();
+            await window.renderWidgetImages();
         }, 300);
     </script>
     <!-- ================= HOME SCREEN (主屏幕与桌面) END ================= -->
@@ -1448,7 +1629,7 @@ body, html {
 <!-- =========================================================
          【拆分模块 4：UI组件 - App：Theme 美化中心】开始
          ========================================================= -->
-    <div id="app-theme" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-paper z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4">
+    <div id="app-theme" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-paper z-[60] flex flex-col translate-y-full box-border pb-4">
         
         <!-- 头部与 Tab 导航栏 (修复为空洞感) -->
         <div class="flex flex-col shrink-0 pt-6 relative z-10 bg-paper">
@@ -1480,7 +1661,7 @@ body, html {
                 <div class="pt-3 mt-3 border-t flex flex-col space-y-2 border-light-1">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold opacity-80">时间戳显示位置</span>
-                        <select id="setting-time-pos" class="p-1.5 outline-none sketch-box shape-2 bg-white/50 text-[10px] border-solid border-ink-1" onchange="window.setTimePos(this.value)">
+                        <select id="setting-time-pos" class="p-1.5 outline-none rounded-2xl shadow-sm bg-white/50 text-[10px] border-solid border-ink-1" onchange="window.setTimePos(this.value)">
                             <option value="in">显示在气泡内部 (默认)</option>
                             <option value="out_top">显示在气泡外侧上方</option>
                             <option value="out_bottom">显示在气泡外侧下方</option>
@@ -1489,7 +1670,7 @@ body, html {
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold opacity-80">时间显示制式</span>
-                        <select id="setting-time-format" class="p-1.5 outline-none sketch-box shape-3 bg-white/50 text-[10px] border-solid border-ink-1" onchange="window.setTimeFormat(this.value)">
+                        <select id="setting-time-format" class="p-1.5 outline-none rounded-2xl shadow-sm bg-white/50 text-[10px] border-solid border-ink-1" onchange="window.setTimeFormat(this.value)">
                             <option value="24">24小时制 (如 18:00)</option>
                             <option value="12">12小时制 (如 PM 6:00)</option>
                         </select>
@@ -1498,26 +1679,26 @@ body, html {
 
                 <div class="font-bold text-sm border-b pb-2 opacity-80 tracking-widest border-light-1">排版与界面重构</div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="window.setChatStyle('memo'); window.updateChatStyleHighlight('memo')">
-                        <div id="ui-style-memo" class="sketch-box shape-1 p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
+                    <div class="cursor-pointer  active:scale-95 transition-transform" onclick="window.setChatStyle('memo'); window.updateChatStyleHighlight('memo')">
+                        <div id="ui-style-memo" class="rounded-2xl shadow-sm p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
                             <span class="text-xs font-bold tracking-widest">手账线稿</span>
                             <span class="text-[8px] opacity-60 mt-1">时间轴连线</span>
                         </div>
                     </div>
-                    <div class="cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="window.setChatStyle('scrapbook'); window.updateChatStyleHighlight('scrapbook')">
-                        <div id="ui-style-scrapbook" class="sketch-box shape-2 p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
+                    <div class="cursor-pointer  active:scale-95 transition-transform" onclick="window.setChatStyle('scrapbook'); window.updateChatStyleHighlight('scrapbook')">
+                        <div id="ui-style-scrapbook" class="rounded-2xl shadow-sm p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
                             <span class="text-xs font-bold tracking-widest">拍立得</span>
                             <span class="text-[8px] opacity-60 mt-1">网格大图错落</span>
                         </div>
                     </div>
-                    <div class="cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="window.setChatStyle('glass'); window.updateChatStyleHighlight('glass')">
-                        <div id="ui-style-glass" class="sketch-box shape-3 p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
+                    <div class="cursor-pointer  active:scale-95 transition-transform" onclick="window.setChatStyle('glass'); window.updateChatStyleHighlight('glass')">
+                        <div id="ui-style-glass" class="rounded-2xl shadow-sm p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
                             <span class="text-xs font-bold tracking-widest">悬浮玻璃</span>
                             <span class="text-[8px] opacity-60 mt-1">透明质感叠层</span>
                         </div>
                     </div>
-                    <div class="cursor-pointer sketch-parent active:scale-95 transition-transform" onclick="window.setChatStyle('minimal'); window.updateChatStyleHighlight('minimal')">
-                        <div id="ui-style-minimal" class="sketch-box shape-1 p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
+                    <div class="cursor-pointer  active:scale-95 transition-transform" onclick="window.setChatStyle('minimal'); window.updateChatStyleHighlight('minimal')">
+                        <div id="ui-style-minimal" class="rounded-2xl shadow-sm p-3 flex flex-col items-center justify-center bg-white/60 h-full text-center shadow-sm border-ink-1 transition-all">
                             <span class="text-xs font-bold tracking-widest">悬浮极简</span>
                             <span class="text-[8px] opacity-60 mt-1">圆卡片+底部栏</span>
                         </div>
@@ -1546,22 +1727,22 @@ body, html {
                 </div>
 
                 <div class="pt-2">
-                    <button class="sketch-box shape-2 px-4 py-2 text-sm font-bold w-full active:scale-95 transition-transform bg-white/50 border-solid border-ink-1" onclick="resetFontSettings()">恢复默认字体 / 清除自定义</button>
+                    <button class="rounded-2xl shadow-sm px-4 py-2 text-sm font-bold w-full active:scale-95 transition-transform bg-white/50 border-solid border-ink-1" onclick="resetFontSettings()">恢复默认字体 / 清除自定义</button>
                 </div>
 
                 <!-- 自定义字体功能区 -->
                 <div class="flex flex-col space-y-2 pt-6 border-t mt-4 border-light-1">
                     <label class="font-bold text-sm">自定义字体 (外链)</label>
-                    <input type="text" id="font-url-input" class="w-full p-2 sketch-box shape-3 bg-white/80 outline-none text-xs border-solid border-ink-1" placeholder="输入字体直链 (如 https://xxx.ttf)">
+                    <input type="text" id="font-url-input" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-xs border-solid border-ink-1" placeholder="输入字体直链 (如 https://xxx.ttf)">
                     
                     <label class="font-bold text-sm mt-2">或上传本地字体 (TTF/OTF)</label>
                     <div class="flex items-center space-x-2">
-                        <button class="sketch-box shape-1 px-3 py-2 text-xs font-bold active:scale-95 transition-transform bg-white/80 border-solid flex-1 border-ink-1" onclick="document.getElementById('font-upload-input').click()">选择本地文件</button>
+                        <button class="rounded-2xl shadow-sm px-3 py-2 text-xs font-bold active:scale-95 transition-transform bg-white/80 border-solid flex-1 border-ink-1" onclick="document.getElementById('font-upload-input').click()">选择本地文件</button>
                         <input type="file" id="font-upload-input" accept=".ttf,.otf,.woff,.woff2" class="hidden" onchange="handleFontUpload(event)">
                         <span id="font-upload-name" class="text-[10px] opacity-60 truncate flex-1">未选择</span>
                     </div>
                     
-                    <button class="sketch-box shape-2 px-4 py-2 mt-3 font-bold w-full active:scale-95 transition-transform bg-white/90 border-solid text-sm tracking-widest border-ink-1" onclick="applyCustomFont()">应用自定义字体</button>
+                    <button class="rounded-2xl shadow-sm px-4 py-2 mt-3 font-bold w-full active:scale-95 transition-transform bg-white/90 border-solid text-sm tracking-widest border-ink-1" onclick="applyCustomFont()">应用自定义字体</button>
                     <p class="text-[10px] opacity-50 mt-1">注：中文字体文件通常较大，应用时请耐心等待几秒加载。</p>
                 </div>
 
@@ -1618,7 +1799,7 @@ body, html {
 
             <!-- Tab 3: 自定义壁纸 -->
             <div id="tab-wallpaper" class="theme-tab-content hidden flex flex-col space-y-6 mt-4">
-                <div class="sketch-box shape-1 p-6 flex flex-col items-center justify-center bg-white/30">
+                <div class="rounded-2xl shadow-sm p-6 flex flex-col items-center justify-center bg-white/30">
                     <div class="w-full aspect-[9/16] bg-gray-200/50 rounded flex items-center justify-center overflow-hidden mb-4 relative border-light-1">
                         <img id="wallpaper-preview-img" src="" class="hidden w-full h-full object-cover">
                         <span id="wallpaper-preview-text" class="text-sm font-bold opacity-50">当前无自定义壁纸</span>
@@ -1626,8 +1807,8 @@ body, html {
                     <input type="file" id="wallpaper-upload-input" accept="image/*" onchange="handleWallpaperUpload(event)">
                     
                     <div class="flex space-x-4 w-full">
-                        <button class="sketch-box shape-2 px-4 py-2 font-bold flex-1 active:scale-95 transition-transform bg-white/80" onclick="document.getElementById('wallpaper-upload-input').click()">上传新壁纸</button>
-                        <button class="sketch-box shape-3 px-4 py-2 font-bold flex-1 active:scale-95 transition-transform bg-red-100/50 text-red-800 border-red-800" onclick="resetWallpaper()">重置壁纸</button>
+                        <button class="rounded-2xl shadow-sm px-4 py-2 font-bold flex-1 active:scale-95 transition-transform bg-white/80" onclick="document.getElementById('wallpaper-upload-input').click()">上传新壁纸</button>
+                        <button class="rounded-2xl shadow-sm px-4 py-2 font-bold flex-1 active:scale-95 transition-transform bg-red-100/50 text-red-800 border-red-800" onclick="resetWallpaper()">重置壁纸</button>
                     </div>
                 </div>
                 <p class="text-xs opacity-60">自定义壁纸上传后将保存在本地数据库中，清空缓存会导致壁纸丢失。上传后将覆盖原主题背景。</p>
@@ -1637,7 +1818,7 @@ body, html {
             <div id="tab-icons" class="theme-tab-content hidden flex flex-col space-y-4 mt-4 h-full">
                 <p class="text-xs opacity-80 font-bold mb-2">选择应用并上传图片或填写 URL 以替换默认图标。</p>
                 
-                                <select id="icon-app-selector" class="w-full p-2 border-2 sketch-box shape-2 bg-white/80 outline-none mb-4 border-ink-color" onchange="updateIconPreview()">
+                                <select id="icon-app-selector" class="w-full p-2 border-2 rounded-2xl shadow-sm bg-white/80 outline-none mb-4 border-ink-color" onchange="updateIconPreview()">
                     <option value="groupChat">通讯</option>
                     <option value="diary">日记本</option>
                     <option value="timeMachine">时光机</option>
@@ -1647,19 +1828,19 @@ body, html {
                     <option value="settings">设置</option>
                 </select>
 
-                <div class="flex flex-col items-center justify-center p-4 sketch-box shape-1 bg-white/30">
+                <div class="flex flex-col items-center justify-center p-4 rounded-2xl shadow-sm bg-white/30">
                     <div class="w-16 h-16 mb-4 flex items-center justify-center border-light-1">
                         <img id="icon-preview-img" src="" class="hidden w-full h-full object-cover rounded-inherit">
                         <span id="icon-preview-text" class="text-sm font-bold opacity-50">默认</span>
                     </div>
                     
                     <input type="file" id="icon-upload-input" accept="image/*" class="hidden" onchange="handleIconUpload(event)">
-                    <input type="text" id="icon-url-input" placeholder="或输入图片 URL..." class="w-full p-2 mb-4 sketch-box shape-3 border-solid bg-white/80 outline-none text-xs border-ink-1">
+                    <input type="text" id="icon-url-input" placeholder="或输入图片 URL..." class="w-full p-2 mb-4 rounded-2xl shadow-sm border-solid bg-white/80 outline-none text-xs border-ink-1">
 
                     <div class="flex space-x-2 w-full">
-                        <button class="sketch-box shape-2 px-2 py-2 font-bold flex-1 active:scale-95 transition-transform bg-white/80 text-xs" onclick="document.getElementById('icon-upload-input').click()">上传本地</button>
-                        <button class="sketch-box shape-1 px-2 py-2 font-bold flex-1 active:scale-95 transition-transform bg-white/80 text-xs" onclick="applyIconUrl()">应用URL</button>
-                        <button class="sketch-box shape-3 px-2 py-2 font-bold flex-1 active:scale-95 transition-transform bg-red-100/50 text-red-800 border-red-800 text-xs" onclick="resetIcon()">重置</button>
+                        <button class="rounded-2xl shadow-sm px-2 py-2 font-bold flex-1 active:scale-95 transition-transform bg-white/80 text-xs" onclick="document.getElementById('icon-upload-input').click()">上传本地</button>
+                        <button class="rounded-2xl shadow-sm px-2 py-2 font-bold flex-1 active:scale-95 transition-transform bg-white/80 text-xs" onclick="applyIconUrl()">应用URL</button>
+                        <button class="rounded-2xl shadow-sm px-2 py-2 font-bold flex-1 active:scale-95 transition-transform bg-red-100/50 text-red-800 border-red-800 text-xs" onclick="resetIcon()">重置</button>
                     </div>
                 </div>
             </div>
@@ -1676,13 +1857,13 @@ body, html {
         <button class="text-[10px] font-bold active:scale-90 text-ink px-2 py-1 rounded bg-black/5 border border-ink-1" onclick="window.saveGlobalCssPreset()">保存当前</button>
     </div>
 </div>
-                <div class="flex-1 relative sketch-box shape-2 border-solid p-1 bg-white/80 h-64 border-ink-1">
+                <div class="flex-1 relative rounded-2xl shadow-sm border-solid p-1 bg-white/80 h-64 border-ink-1">
                     <textarea id="custom-css-input" class="w-full h-full bg-transparent outline-none p-3 text-sm font-mono custom-scrollbar" placeholder="/* 在此输入 CSS */&#10;body {&#10;  /* filter: grayscale(1); */&#10;}"></textarea>
                 </div>
                 
                 <div class="flex space-x-3 pt-4">
-                    <button id="btn-save-css" class="sketch-box shape-1 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/90 text-sm tracking-widest flex-[2] border-ink-1" onclick="saveCustomCSS()">保存并应用</button>
-                    <button class="sketch-box shape-3 px-4 py-3 font-bold active:scale-95 transition-transform bg-red-100/50 text-red-800 border-red-800 text-sm flex-[1]" onclick="window.resetCustomCSS()">清空重置</button>
+                    <button id="btn-save-css" class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/90 text-sm tracking-widest flex-[2] border-ink-1" onclick="saveCustomCSS()">保存并应用</button>
+                    <button class="rounded-2xl shadow-sm px-4 py-3 font-bold active:scale-95 transition-transform bg-red-100/50 text-red-800 border-red-800 text-sm flex-[1]" onclick="window.resetCustomCSS()">清空重置</button>
                 </div>
             </div>
 
@@ -1695,13 +1876,13 @@ body, html {
 <!-- =========================================================
          【拆分模块 5：UI组件 - App：Settings 系统设置】开始
          ========================================================= -->
-    <div id="app-settings" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-paper z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4">
+    <div id="app-settings" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-paper z-[60] flex flex-col translate-y-full box-border pb-4">
         
         <!-- 头部 -->
         <div class="flex flex-col border-b shrink-0 border-light-1">
             <div class="flex items-center px-6 pt-6 pb-4">
-                <button onclick="closeApp('settings')" class="text-lg font-bold mr-4 sketch-parent active:scale-90 transition-transform">
-                    <div class="sketch-box shape-1 px-4 py-1 flex items-center justify-center bg-white/50">←</div>
+                <button onclick="closeApp('settings')" class="text-lg font-bold mr-4  active:scale-90 transition-transform">
+                    <div class="rounded-2xl shadow-sm px-4 py-1 flex items-center justify-center bg-white/50">←</div>
                 </button>
                 <h2 class="text-lg font-bold tracking-widest flex-1 text-center pr-12">系统设置</h2>
             </div>
@@ -1712,21 +1893,21 @@ body, html {
             
             <div class="flex flex-col space-y-2">
                 <label class="font-bold text-sm">API 地址 (Base URL)</label>
-                <input type="text" id="setting-api-url" class="w-full p-2 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="例如: https://api.openai.com">
+                <input type="text" id="setting-api-url" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="例如: https://api.openai.com">
             </div>
 
             <div class="flex flex-col space-y-2">
                 <label class="font-bold text-sm">API 密钥 (API Key)</label>
-                <input type="password" id="setting-api-key" class="w-full p-2 sketch-box shape-3 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="sk-...">
+                <input type="password" id="setting-api-key" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="sk-...">
             </div>
 
             <div class="flex flex-col space-y-2">
-                <button id="btn-fetch-models" onclick="fetchAPIModels()" class="sketch-box shape-1 px-4 py-2 font-bold w-full active:scale-95 transition-transform bg-white/80 text-sm border-ink-1 border-solid">拉取模型列表</button>
+                <button id="btn-fetch-models" onclick="fetchAPIModels()" class="rounded-2xl shadow-sm px-4 py-2 font-bold w-full active:scale-95 transition-transform bg-white/80 text-sm border-ink-1 border-solid">拉取模型列表</button>
             </div>
 
             <div class="flex flex-col space-y-2">
                 <label class="font-bold text-sm">选择模型</label>
-                <select id="setting-model-select" class="w-full p-2 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid border-ink-1">
+                <select id="setting-model-select" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1">
                     <option value="">请先填写并拉取模型</option>
                 </select>
             </div>
@@ -1751,7 +1932,7 @@ body, html {
             
             <!-- 测试系统弹窗专用按钮 -->
             <div class="flex flex-col space-y-2 pt-6 border-t border-light-1">
-                <button class="sketch-box shape-2 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/80 border-solid text-sm text-green-700 border-ink-1" onclick="window.testSysNotification()">
+                <button class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/80 border-solid text-sm text-green-700 border-ink-1" onclick="window.testSysNotification()">
                     🔔 测试手机系统级别弹窗
                 </button>
             </div>
@@ -1770,7 +1951,7 @@ body, html {
                     <span>主动联系触发时间 (分钟)</span>
                     <span class="text-[10px] opacity-50 font-normal">你离开多久后TA才可能找你 (默认15)</span>
                 </label>
-                <input type="number" id="setting-ai-auto-time" class="w-16 p-1 sketch-box shape-3 bg-white/80 outline-none text-xs border-solid text-center font-mono border-ink-1" placeholder="15" onchange="localStorage.setItem('oc_phone_ai_auto_time', this.value)">
+                <input type="number" id="setting-ai-auto-time" class="w-16 p-1 rounded-2xl shadow-sm bg-white/80 outline-none text-xs border-solid text-center font-mono border-ink-1" placeholder="15" onchange="localStorage.setItem('oc_phone_ai_auto_time', this.value)">
             </div>
 
             <div class="flex items-center justify-between pt-4">
@@ -1800,18 +1981,18 @@ body, html {
                 <div id="sub-api-advanced" class="flex flex-col space-y-4 hidden">
                     <div class="flex flex-col space-y-2">
                         <label class="font-bold text-sm">副 API 地址 (Base URL)</label>
-                        <input type="text" id="setting-sub-api-url" class="w-full p-2 sketch-box shape-1 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="例如: https://api.openai.com">
+                        <input type="text" id="setting-sub-api-url" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="例如: https://api.openai.com">
                     </div>
                     <div class="flex flex-col space-y-2">
                         <label class="font-bold text-sm">副 API 密钥 (API Key)</label>
-                        <input type="password" id="setting-sub-api-key" class="w-full p-2 sketch-box shape-3 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="sk-...">
+                        <input type="password" id="setting-sub-api-key" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="sk-...">
                     </div>
                     <div class="flex flex-col space-y-2">
-                        <button id="btn-fetch-sub-models" class="sketch-box shape-2 px-4 py-2 font-bold w-full active:scale-95 transition-transform bg-white/80 text-sm border-solid border-ink-1" onclick="fetchSubAPIModels()">拉取副模型列表</button>
+                        <button id="btn-fetch-sub-models" class="rounded-2xl shadow-sm px-4 py-2 font-bold w-full active:scale-95 transition-transform bg-white/80 text-sm border-solid border-ink-1" onclick="fetchSubAPIModels()">拉取副模型列表</button>
                     </div>
                     <div class="flex flex-col space-y-2">
                         <label class="font-bold text-sm">选择总结模型</label>
-                        <select id="setting-sub-model-select" class="w-full p-2 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid border-ink-1">
+                        <select id="setting-sub-model-select" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1">
                             <option value="">请先拉取模型</option>
                         </select>
                     </div>
@@ -1831,15 +2012,15 @@ body, html {
                         <input type="checkbox" id="setting-pass-enable" class="w-5 h-5 accent-[var(--ink)] cursor-pointer" onchange="toggleLockSettings()">
                     </div>
                     <div id="lock-password-container" class="flex flex-col space-y-2 hidden">
-                        <input type="password" id="setting-lock-password" class="w-full p-2 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="设置解锁密码...">
+                        <input type="password" id="setting-lock-password" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="设置解锁密码...">
                     </div>
                     <div class="flex items-center justify-between">
                         <label class="font-bold text-sm">启用验证问题</label>
                         <input type="checkbox" id="setting-question-enable" class="w-5 h-5 accent-[var(--ink)] cursor-pointer" onchange="toggleLockSettings()">
                     </div>
                     <div id="lock-question-container" class="flex flex-col space-y-2 hidden">
-                        <input type="text" id="setting-lock-question" class="w-full p-2 sketch-box shape-1 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="设置验证问题 (如: 我的猫叫什么?)">
-                        <input type="text" id="setting-lock-answer" class="w-full p-2 sketch-box shape-3 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="设置问题答案...">
+                        <input type="text" id="setting-lock-question" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="设置验证问题 (如: 我的猫叫什么?)">
+                        <input type="text" id="setting-lock-answer" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="设置问题答案...">
                     </div>
                 </div>
             </div>
@@ -1848,16 +2029,16 @@ body, html {
             <div class="flex flex-col space-y-4 pt-6 border-t border-light-1">
                 <h3 class="font-bold text-base">数据管理与备份</h3>
                 <div class="flex flex-col space-y-3">
-                    <button onclick="window.deepCleanJunkData()" class="sketch-box shape-2 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-orange-50 text-orange-700 border-solid text-sm tracking-widest border-orange-500">清理废弃壁纸与无用缓存</button>
-                    <button onclick="document.getElementById('export-options-modal').classList.remove('hidden')" class="sketch-box shape-1 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/80 border-solid text-sm tracking-widest border-ink-1">导出数据备份</button>
-                    <button onclick="document.getElementById('import-data-input').click()" class="sketch-box shape-2 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/80 border-solid text-sm tracking-widest border-ink-1">导入数据备份</button>
+                    <button onclick="window.deepCleanJunkData()" class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-orange-50 text-orange-700 border-solid text-sm tracking-widest border-orange-500">清理废弃壁纸与无用缓存</button>
+                    <button onclick="document.getElementById('export-options-modal').classList.remove('hidden')" class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/80 border-solid text-sm tracking-widest border-ink-1">导出数据备份</button>
+                    <button onclick="document.getElementById('import-data-input').click()" class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/80 border-solid text-sm tracking-widest border-ink-1">导入数据备份</button>
                     <input type="file" id="import-data-input" accept=".echo_backup, .json" class="hidden" onchange="window.importAllData(event)">
-                    <button onclick="window.confirmResetAllData()" class="sketch-box shape-3 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-red-50 text-red-600 border-solid text-sm tracking-widest border-red-500">清空重置所有数据</button>
+                    <button onclick="window.confirmResetAllData()" class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-red-50 text-red-600 border-solid text-sm tracking-widest border-red-500">清空重置所有数据</button>
                 </div>
             </div>
             
             <div class="pt-6 mt-auto">
-                <button id="btn-save-settings" class="sketch-box shape-3 px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/90 text-base tracking-widest border-ink-1 border-solid" onclick="saveSettings()">保存设置</button>
+                <button id="btn-save-settings" class="rounded-2xl shadow-sm px-4 py-3 font-bold w-full active:scale-95 transition-transform bg-white/90 text-base tracking-widest border-ink-1 border-solid" onclick="saveSettings()">保存设置</button>
             </div>
 
         </div>
@@ -1870,13 +2051,13 @@ body, html {
 <!-- =========================================================
          【拆分模块 7：UI组件与逻辑 - App：Archives 档案系统 (无缝预加载版)】开始
          ========================================================= -->
-    <div id="app-archives" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-paper z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4">
+    <div id="app-archives" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-paper z-[60] flex flex-col translate-y-full box-border pb-4">
         
         <!-- 头部与 Tab 导航栏 -->
         <div class="flex flex-col border-b shrink-0 border-light-1">
             <div class="flex items-center px-6 pt-6 pb-2">
-                <button onclick="closeApp('archives')" class="text-lg font-bold mr-4 sketch-parent active:scale-90 transition-transform">
-                    <div class="sketch-box shape-1 px-4 py-1 flex items-center justify-center bg-white/50">←</div>
+                <button onclick="closeApp('archives')" class="text-lg font-bold mr-4  active:scale-90 transition-transform">
+                    <div class="rounded-2xl shadow-sm px-4 py-1 flex items-center justify-center bg-white/50">←</div>
                 </button>
                 <h2 class="text-lg font-bold tracking-widest flex-1 text-center pr-12">档案库</h2>
             </div>
@@ -1904,13 +2085,13 @@ body, html {
                 
                 <div class="flex flex-col space-y-2">
                     <label class="font-bold text-sm">对象名称</label>
-                    <input type="text" id="char-name" class="w-full p-2 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="输入称呼或代号...">
+                    <input type="text" id="char-name" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="输入称呼或代号...">
                 </div>
 
                 <div class="flex flex-col space-y-2">
                     <label class="font-bold text-sm">身份归属</label>
-                    <div class="relative w-full sketch-parent">
-                        <select id="char-type" class="w-full p-2 pl-3 pr-8 sketch-box shape-3 bg-white/80 outline-none text-sm border-solid appearance-none cursor-pointer border-ink-1">
+                    <div class="relative w-full ">
+                        <select id="char-type" class="w-full p-2 pl-3 pr-8 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid appearance-none cursor-pointer border-ink-1">
                             <option value="npc">观测对象 (他人)</option>
                             <option value="me">记录者 (本人)</option>
                         </select>
@@ -1919,11 +2100,11 @@ body, html {
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label class="font-bold text-sm">使用语言 (选填)</label>
-                    <input type="text" id="char-lang" class="w-full p-2 sketch-box shape-1 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="例如: 日语、英语，留空默认中文">
+                    <input type="text" id="char-lang" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="例如: 日语、英语，留空默认中文">
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label class="font-bold text-sm">核心设定 (特征/过往)</label>
-                    <textarea id="char-prompt" class="w-full h-24 p-2 sketch-box shape-1 bg-white/80 outline-none text-sm border-solid custom-scrollbar leading-relaxed border-ink-1" placeholder="记录这个人的性格、背景或对话习惯..."></textarea>
+                    <textarea id="char-prompt" class="w-full h-24 p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid custom-scrollbar leading-relaxed border-ink-1" placeholder="记录这个人的性格、背景或对话习惯..."></textarea>
                 </div>
 
                 <!-- 允许独立写日记开关 -->
@@ -1944,16 +2125,16 @@ body, html {
                     <div id="relation-list" class="flex flex-col space-y-2 empty:hidden"></div>
                     
                     <div class="flex items-center space-x-1 pt-1">
-                        <div class="relative flex-1 sketch-parent min-w-0">
-                            <select id="rel-target-select" class="w-full p-2 pl-2 pr-4 sketch-box shape-2 bg-white/50 outline-none text-xs border-solid appearance-none cursor-pointer truncate border-light-1">
+                        <div class="relative flex-1  min-w-0">
+                            <select id="rel-target-select" class="w-full p-2 pl-2 pr-4 rounded-2xl shadow-sm bg-white/50 outline-none text-xs border-solid appearance-none cursor-pointer truncate border-light-1">
                                 <option value="">选择对象...</option>
                             </select>
                             <div class="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] font-bold opacity-50">▼</div>
                         </div>
-                        <input type="text" id="rel-label-input" class="w-1/4 p-2 sketch-box shape-3 bg-white/50 outline-none text-xs border-solid min-w-0 border-light-1" placeholder="如:宿敌">
-                        <button class="px-2 py-2 sketch-box shape-1 font-bold text-xs active:scale-95 bg-white/80 shrink-0 border-solid border-ink-1" onclick="addRelation()">添加</button>
+                        <input type="text" id="rel-label-input" class="w-1/4 p-2 rounded-2xl shadow-sm bg-white/50 outline-none text-xs border-solid min-w-0 border-light-1" placeholder="如:宿敌">
+                        <button class="px-2 py-2 rounded-2xl shadow-sm font-bold text-xs active:scale-95 bg-white/80 shrink-0 border-solid border-ink-1" onclick="addRelation()">添加</button>
                         
-                        <button class="px-2 py-2 sketch-box shape-2 font-bold text-xs active:scale-95 bg-white/80 shrink-0 flex items-center justify-center space-x-1 btn-ink" onclick="showRelationGraph()">
+                        <button class="px-2 py-2 rounded-2xl shadow-sm font-bold text-xs active:scale-95 bg-white/80 shrink-0 flex items-center justify-center space-x-1 btn-ink" onclick="showRelationGraph()">
                             <span class="text-[10px] opacity-80">❖</span>
                             <span>脉络板</span>
                         </button>
@@ -1962,7 +2143,7 @@ body, html {
 
                 <div class="flex flex-col space-y-2 pt-2 border-t border-light-1">
                     <label class="font-bold text-sm">影像留存 (选填)</label>
-                    <div class="w-16 h-16 sketch-box shape-2 border-ink-1 border-solid flex items-center justify-center cursor-pointer relative bg-white/50 overflow-hidden" onclick="document.getElementById('char-avatar-upload').click()">
+                    <div class="w-16 h-16 rounded-2xl shadow-sm border-ink-1 border-solid flex items-center justify-center cursor-pointer relative bg-white/50 overflow-hidden" onclick="document.getElementById('char-avatar-upload').click()">
                         <span id="char-avatar-plus" class="text-xl font-light opacity-50">+</span>
                         <img id="char-avatar-preview" src="" class="hidden absolute inset-0 w-full h-full object-cover">
                     </div>
@@ -1971,8 +2152,8 @@ body, html {
                 </div>
                 
                 <div class="flex space-x-4 pt-4 mt-auto">
-                    <button id="btn-cancel-edit" class="hidden sketch-box shape-3 px-4 py-2 text-sm font-bold flex-1 active:scale-95 transition-transform bg-white/50 border-solid border-ink-1" onclick="resetCharForm(); switchArchiveTab('tab-chars')">取消</button>
-                    <button id="btn-save-char" class="sketch-box shape-1 px-4 py-2 text-sm font-bold w-full active:scale-95 transition-transform bg-white/90 border-solid tracking-widest flex-1 border-ink-1" onclick="saveCharacter()">封存档案</button>
+                    <button id="btn-cancel-edit" class="hidden rounded-2xl shadow-sm px-4 py-2 text-sm font-bold flex-1 active:scale-95 transition-transform bg-white/50 border-solid border-ink-1" onclick="resetCharForm(); switchArchiveTab('tab-chars')">取消</button>
+                    <button id="btn-save-char" class="rounded-2xl shadow-sm px-4 py-2 text-sm font-bold w-full active:scale-95 transition-transform bg-white/90 border-solid tracking-widest flex-1 border-ink-1" onclick="saveCharacter()">封存档案</button>
                 </div>
             </div>
 
@@ -1981,8 +2162,8 @@ body, html {
         <!-- 绝美侦探板关系图谱模态框 -->
         <div id="relation-graph-modal" class="absolute inset-0 z-[100] bg-paper flex flex-col hidden transition-opacity">
             <div class="flex items-center px-6 pt-6 pb-2 border-b shrink-0 border-light-1">
-                <button onclick="document.getElementById('relation-graph-modal').classList.add('hidden')" class="text-lg font-bold mr-4 sketch-parent active:scale-90 transition-transform">
-                    <div class="sketch-box shape-2 px-4 py-1 flex items-center justify-center bg-white/50 border-ink-1 border-solid">X</div>
+                <button onclick="document.getElementById('relation-graph-modal').classList.add('hidden')" class="text-lg font-bold mr-4  active:scale-90 transition-transform">
+                    <div class="rounded-2xl shadow-sm px-4 py-1 flex items-center justify-center bg-white/50 border-ink-1 border-solid">X</div>
                 </button>
                 <h2 class="text-base font-bold tracking-widest flex-1 text-center pr-12 opacity-80">关联脉络板</h2>
             </div>
@@ -2001,13 +2182,13 @@ body, html {
          <!-- =========================================================
      【拆分模块 8：UI组件与逻辑 - App：Commands 指令集与指令】开始
      ========================================================= -->
-<div id="app-commands" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-[var(--bg-paper)] z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4">
+<div id="app-commands" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-[var(--bg-paper)] z-[60] flex flex-col translate-y-full box-border pb-4">
     
     <!-- 头部与 Tab 导航栏 -->
     <div class="flex flex-col border-b  shrink-0 border-light-1">
         <div class="flex items-center px-6 pt-6 pb-2">
-            <button onclick="closeApp('commands')" class="text-lg font-bold mr-4 sketch-parent active:scale-90 transition-transform">
-                <div class="sketch-box shape-1 px-4 py-1 flex items-center justify-center bg-white/50">←</div>
+            <button onclick="closeApp('commands')" class="text-lg font-bold mr-4  active:scale-90 transition-transform">
+                <div class="rounded-2xl shadow-sm px-4 py-1 flex items-center justify-center bg-white/50">←</div>
             </button>
             <h2 class="text-lg font-bold tracking-widest flex-1 text-center pr-12">指令集</h2>
         </div>
@@ -2045,11 +2226,11 @@ body, html {
             <div class="flex space-x-4">
                 <div class="flex flex-col space-y-2 flex-1">
                     <label class="font-bold text-sm">词条名称</label>
-                    <input type="text" id="wi-name" class="w-full p-2 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="如: 魔法设定...">
+                    <input type="text" id="wi-name" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="如: 魔法设定...">
                 </div>
                 <div class="flex flex-col space-y-2 flex-1">
                     <label class="font-bold text-sm">归属分组</label>
-                    <input type="text" id="wi-group" class="w-full p-2 sketch-box shape-1 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="如: 世界观 / NPC" list="group-suggestions">
+                    <input type="text" id="wi-group" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="如: 世界观 / NPC" list="group-suggestions">
                     <datalist id="group-suggestions"></datalist>
                 </div>
             </div>
@@ -2059,13 +2240,13 @@ body, html {
                     <span>触发关键词 (逗号分隔)</span>
                     <span class="text-xs opacity-50 font-normal">留空即为常驻生效</span>
                 </label>
-                <input type="text" id="wi-keys" class="w-full p-2 sketch-box shape-3 bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="如: 魔法, 魔力, magic">
+                <input type="text" id="wi-keys" class="w-full p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid border-ink-1" placeholder="如: 魔法, 魔力, magic">
             </div>
 
             <div class="flex flex-col space-y-2">
                 <label class="font-bold text-sm">注入 / 插入位置</label>
-                <div class="relative w-full sketch-parent">
-                    <select id="wi-position" class="w-full p-2 pl-3 pr-8 sketch-box shape-2 bg-white/80 outline-none text-sm border-solid appearance-none cursor-pointer border-ink-1">
+                <div class="relative w-full ">
+                    <select id="wi-position" class="w-full p-2 pl-3 pr-8 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid appearance-none cursor-pointer border-ink-1">
                         <option value="system_before">系统提示词 - 前置 (System Prompt Before)</option>
                         <option value="system_after">系统提示词 - 后置 (System Prompt After)</option>
                         <option value="chat_before">对话历史 - 顶端 (Before Chat History)</option>
@@ -2080,12 +2261,12 @@ body, html {
                 <label class="font-bold text-sm flex justify-between items-end">
                     <span>设定/指令内容</span>
                 </label>
-                <textarea id="wi-content" class="w-full h-32 p-2 sketch-box shape-1 bg-white/80 outline-none text-sm border-solid custom-scrollbar leading-relaxed border-ink-1" placeholder="在此编写详细的设定、要求或隐藏规则..."></textarea>
+                <textarea id="wi-content" class="w-full h-32 p-2 rounded-2xl shadow-sm bg-white/80 outline-none text-sm border-solid custom-scrollbar leading-relaxed border-ink-1" placeholder="在此编写详细的设定、要求或隐藏规则..."></textarea>
             </div>
             
             <div class="flex space-x-4 pt-4 mt-auto">
-                <button id="btn-cancel-wi" class="hidden sketch-box shape-3 px-4 py-2 text-sm font-bold flex-1 active:scale-95 transition-transform bg-white/50 border-solid" style="border-width: 1px;" onclick="resetWIForm(); switchCmdTab('tab-cmd-list')">取消编辑</button>
-                <button id="btn-save-wi" class="sketch-box shape-2 px-4 py-2 text-sm font-bold w-full active:scale-95 transition-transform bg-white/90 border-solid tracking-widest flex-1 border-ink-1" onclick="saveWorldInfo()">封装词条</button>
+                <button id="btn-cancel-wi" class="hidden rounded-2xl shadow-sm px-4 py-2 text-sm font-bold flex-1 active:scale-95 transition-transform bg-white/50 border-solid" style="border-width: 1px;" onclick="resetWIForm(); switchCmdTab('tab-cmd-list')">取消编辑</button>
+                <button id="btn-save-wi" class="rounded-2xl shadow-sm px-4 py-2 text-sm font-bold w-full active:scale-95 transition-transform bg-white/90 border-solid tracking-widest flex-1 border-ink-1" onclick="saveWorldInfo()">封装词条</button>
             </div>
         </div>
 
@@ -2101,7 +2282,7 @@ body, html {
     <!-- =========================================================
          【UI组件与逻辑 - App：Time Machine 剧情推演模拟器】开始
          ========================================================= -->
-<div id="app-timeMachine" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-[var(--bg-paper)] z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4 overflow-hidden">
+<div id="app-timeMachine" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-[var(--bg-paper)] z-[60] flex flex-col translate-y-full box-border pb-4 overflow-hidden">
     
 <!-- 头部栏 -->
 <div id="tm-header" class="flex flex-col border-b shrink-0 border-light-1">
@@ -2112,8 +2293,8 @@ body, html {
         </button>
         <h2 id="tm-header-title" class="text-[17px] font-bold tracking-widest text-center transition-opacity duration-300 w-full text-ink pointer-events-none">时光机</h2>
         <div id="tm-header-tools" class="absolute right-4 flex opacity-0 pointer-events-none transition-opacity duration-500 z-10">
-            <button onclick="openTMLoadModal()" class="w-10 sketch-box shape-1 px-1 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold mr-1 tm-btn-outline">读档</button>
-            <button onclick="openTMSettingsModal()" class="w-10 sketch-box shape-2 px-1 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold tm-btn-outline">设置</button>
+            <button onclick="openTMLoadModal()" class="w-10 rounded-2xl shadow-sm px-1 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold mr-1 tm-btn-outline">读档</button>
+            <button onclick="openTMSettingsModal()" class="w-10 rounded-2xl shadow-sm px-1 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold tm-btn-outline">设置</button>
         </div>
     </div>
     <div class="flex w-full justify-center px-6 pb-2 text-[10px] font-bold opacity-50 tracking-widest mt-2 text-ink pointer-events-none">
@@ -2129,15 +2310,15 @@ body, html {
         </div>
         
         <div class="w-full flex flex-col space-y-8 z-10 px-2 pb-6">
-            <div class="w-[92%] self-start relative cursor-pointer sketch-parent active:scale-95 transition-all" onclick="enterTMSetup('rp')">
-                <div class="sketch-box shape-2 border-solid w-full py-8 px-6 flex flex-col items-start justify-center text-left bg-white/60 hover:bg-white/80 transition-colors shadow-sm tm-box-2px">
+            <div class="w-[92%] self-start relative cursor-pointer  active:scale-95 transition-all" onclick="enterTMSetup('rp')">
+                <div class="rounded-2xl shadow-sm border-solid w-full py-8 px-6 flex flex-col items-start justify-center text-left bg-white/60 hover:bg-white/80 transition-colors shadow-sm tm-box-2px">
                     <span class="text-lg font-bold tracking-[0.3em] mb-3 text-ink">日常互动</span>
                     <span class="text-xs opacity-70 tracking-widest font-light text-ink">纯文本扮演，侧重剧情交互与对话</span>
                 </div>
             </div>
 
-            <div class="w-[92%] self-end relative cursor-pointer sketch-parent active:scale-95 transition-all" onclick="enterTMSetup('trpg')">
-                <div class="sketch-box shape-3 w-full py-8 px-6 flex flex-col items-end justify-center text-right bg-white/60 hover:bg-white/80 transition-colors shadow-sm tm-box-2px">
+            <div class="w-[92%] self-end relative cursor-pointer  active:scale-95 transition-all" onclick="enterTMSetup('trpg')">
+                <div class="rounded-2xl shadow-sm w-full py-8 px-6 flex flex-col items-end justify-center text-right bg-white/60 hover:bg-white/80 transition-colors shadow-sm tm-box-2px">
                     <span class="text-lg font-bold tracking-[0.3em] mr-[-0.3em] mb-3 text-ink">跑团推演</span>
                     <span class="text-xs opacity-70 tracking-widest font-light text-ink">包含状态追踪与随机突发事件处理</span>
                 </div>
@@ -2154,10 +2335,10 @@ body, html {
             <div id="tm-npc-container" class="flex flex-wrap gap-2 empty:hidden"></div>
         </div>
         <div class="pt-6 mt-auto pb-4 flex flex-col space-y-3 shrink-0">
-            <button id="btn-tm-continue" class="hidden sketch-box shape-3 px-4 py-3 text-sm font-black w-full active:scale-95 transition-transform tracking-widest bg-white/50 tm-btn-outline" onclick="continueTimeMachine()">
+            <button id="btn-tm-continue" class="hidden rounded-2xl shadow-sm px-4 py-3 text-sm font-black w-full active:scale-95 transition-transform tracking-widest bg-white/50 tm-btn-outline" onclick="continueTimeMachine()">
                 [ 继 续 上 次 推 演 ]
             </button>
-            <button id="btn-tm-start" class="sketch-box shape-2 px-4 py-4 text-sm font-black w-full active:scale-95 transition-transform tracking-widest border-solid bg-white/90 tm-btn-bold" onclick="startTimeMachine()">
+            <button id="btn-tm-start" class="rounded-2xl shadow-sm px-4 py-4 text-sm font-black w-full active:scale-95 transition-transform tracking-widest border-solid bg-white/90 tm-btn-bold" onclick="startTimeMachine()">
                 [ 开 始 新 推 演 ]
             </button>
         </div>
@@ -2167,40 +2348,40 @@ body, html {
     <div id="tab-tm-play" class="absolute inset-0 bg-[var(--bg-paper)] z-[100] hidden flex flex-col transition-transform translate-y-full duration-500">
         <div class="flex justify-between items-center px-2 py-2 border-b bg-black/5 shadow-sm z-10 shrink-0 border-light-1">
             <div class="flex items-center space-x-2 overflow-hidden mr-1">
-                <button onclick="exitTimeMachine()" class="text-sm font-bold opacity-60 hover:opacity-100 active:scale-90 flex items-center justify-center sketch-box shape-1 px-2 py-1 border shrink-0 border-ink text-ink">←</button>
+                <button onclick="exitTimeMachine()" class="text-sm font-bold opacity-60 hover:opacity-100 active:scale-90 flex items-center justify-center rounded-2xl shadow-sm px-2 py-1 border shrink-0 border-ink text-ink">←</button>
                 <span id="tm-token-display" class="text-[8px] font-mono font-bold opacity-50 tracking-tighter transition-colors truncate text-ink">预估:0 | 上次:--</span>
             </div>
             <div class="flex space-x-1 shrink-0">
-                <button onclick="openTMLoadModal()" class="sketch-box shape-3 px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">读档</button>
-                <button onclick="saveTMProgressToSlot()" class="sketch-box shape-2 px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">存档</button>
-                <button onclick="document.getElementById('tm-memory-modal').classList.remove('hidden')" class="sketch-box shape-1 px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">记忆</button>
-                <button onclick="openTMSettingsModal()" class="sketch-box shape-2 px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">设置</button>
+                <button onclick="openTMLoadModal()" class="rounded-2xl shadow-sm px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">读档</button>
+                <button onclick="saveTMProgressToSlot()" class="rounded-2xl shadow-sm px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">存档</button>
+                <button onclick="document.getElementById('tm-memory-modal').classList.remove('hidden')" class="rounded-2xl shadow-sm px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">记忆</button>
+                <button onclick="openTMSettingsModal()" class="rounded-2xl shadow-sm px-2 py-1 flex items-center justify-center bg-white/50 active:scale-95 border-solid text-[10px] font-bold whitespace-nowrap tm-btn-outline">设置</button>
             </div>
         </div>
         
         <div id="tm-trpg-floating-menu" class="absolute right-2 top-11 flex flex-col space-y-1 z-20 hidden transition-opacity">
-            <button onclick="document.getElementById('tm-trpg-status-modal').classList.remove('hidden')" class="sketch-box shape-2 w-8 h-8 flex flex-col items-center justify-center bg-white/80 active:scale-90 border-solid shadow-sm opacity-80 hover:opacity-100 border-ink-1"><span class="text-[8px] font-bold tracking-tighter text-ink">面板</span></button>
-            <button onclick="rollLocalDice()" class="sketch-box shape-3 w-8 h-8 flex flex-col items-center justify-center bg-white/80 active:scale-90 border-solid shadow-sm opacity-80 hover:opacity-100 border-ink-1"><span class="text-[8px] font-bold tracking-tighter text-ink">检定</span></button>
+            <button onclick="document.getElementById('tm-trpg-status-modal').classList.remove('hidden')" class="rounded-2xl shadow-sm w-8 h-8 flex flex-col items-center justify-center bg-white/80 active:scale-90 border-solid shadow-sm opacity-80 hover:opacity-100 border-ink-1"><span class="text-[8px] font-bold tracking-tighter text-ink">面板</span></button>
+            <button onclick="rollLocalDice()" class="rounded-2xl shadow-sm w-8 h-8 flex flex-col items-center justify-center bg-white/80 active:scale-90 border-solid shadow-sm opacity-80 hover:opacity-100 border-ink-1"><span class="text-[8px] font-bold tracking-tighter text-ink">检定</span></button>
         </div>
         
         <div id="tm-chat-container" class="flex-1 overflow-y-auto custom-scrollbar px-4 py-6 flex flex-col space-y-4 tm-texture-dots"></div>
         
-        <div id="tm-select-action-bar" class="absolute bottom-[5rem] left-4 right-4 bg-[var(--bg-paper)] sketch-box shape-2 p-3 shadow-xl z-20 hidden flex justify-between items-center border-solid transition-transform translate-y-10 tm-box-2px">
+        <div id="tm-select-action-bar" class="absolute bottom-[5rem] left-4 right-4 bg-[var(--bg-paper)] rounded-2xl shadow-sm p-3 shadow-xl z-20 hidden flex justify-between items-center border-solid transition-transform translate-y-10 tm-box-2px">
             <span class="text-sm font-bold opacity-80 text-ink" id="tm-select-count">已选择: 0</span>
             <div class="flex space-x-3">
                 <button onclick="exitTMSelectMode()" class="text-xs font-bold opacity-60 active:scale-95 text-ink">取消</button>
-                <button onclick="deleteTMSelected()" class="text-xs font-bold text-red-800 bg-red-100/50 px-3 py-1 sketch-box shape-1 border-solid active:scale-95 tm-btn-danger">删除选毁</button>
+                <button onclick="deleteTMSelected()" class="text-xs font-bold text-red-800 bg-red-100/50 px-3 py-1 rounded-2xl shadow-sm border-solid active:scale-95 tm-btn-danger">删除选毁</button>
             </div>
         </div>
         
         <div class="w-full flex flex-col px-4 pb-4 pt-3 bg-[var(--bg-paper)] border-t z-10 shrink-0 border-ink-light tm-footer-shadow">
             <div id="tm-ai-options" class="flex flex-col space-y-2 mb-1 empty:hidden w-full max-h-32 overflow-y-auto custom-scrollbar"></div>
             <div class="flex items-end space-x-2">
-                <button class="sketch-box shape-1 w-12 h-12 font-bold active:scale-95 transition-transform bg-white/90 border-solid shrink-0 flex items-center justify-center text-ink border-ink-light" onclick="generateTMResponse()">
+                <button class="rounded-2xl shadow-sm w-12 h-12 font-bold active:scale-95 transition-transform bg-white/90 border-solid shrink-0 flex items-center justify-center text-ink border-ink-light" onclick="generateTMResponse()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path></svg>
                 </button>
-                <textarea id="tm-input-action" oninput="updateTMTokenCounter()" class="flex-1 h-12 max-h-24 p-2 sketch-box shape-2 bg-white/90 outline-none text-sm border-solid custom-scrollbar resize-none border-ink-1 text-ink" placeholder="执行动作或说话..."></textarea>
-                <button class="sketch-box shape-3 w-12 h-12 font-bold active:scale-95 transition-transform bg-white/90 border-solid shrink-0 flex items-center justify-center text-ink border-ink-light" onclick="sendTMAction()">
+                <textarea id="tm-input-action" oninput="updateTMTokenCounter()" class="flex-1 h-12 max-h-24 p-2 rounded-2xl shadow-sm bg-white/90 outline-none text-sm border-solid custom-scrollbar resize-none border-ink-1 text-ink" placeholder="执行动作或说话..."></textarea>
+                <button class="rounded-2xl shadow-sm w-12 h-12 font-bold active:scale-95 transition-transform bg-white/90 border-solid shrink-0 flex items-center justify-center text-ink border-ink-light" onclick="sendTMAction()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </div>
@@ -2214,7 +2395,7 @@ body, html {
      <!-- =========================================================
      【UI组件 - App：Diary 手账本 (全新绝美精装版)】开始
      ========================================================= -->
-<div id="app-diary" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-diary-paper z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4 overflow-hidden">
+<div id="app-diary" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-diary-paper z-[60] flex flex-col translate-y-full box-border pb-4 overflow-hidden">
     
     <!-- 绝美手账本左侧活页装订孔装饰 -->
     <div class="absolute left-2 top-0 bottom-0 w-4 border-r border-dashed border-black/10 flex flex-col justify-evenly py-10 z-0 pointer-events-none">
@@ -2286,7 +2467,7 @@ body, html {
     </button>
 
     <!-- ================= 写日记：信笺弹窗 ================= -->
-    <div id="diary-compose-modal" class="absolute inset-0 z-[70] bg-diary-paper flex flex-col transition-transform translate-y-full duration-300">
+    <div id="diary-compose-modal" class="absolute inset-0 z-[70] bg-diary-paper flex flex-col translate-y-full">
         <!-- 头部 -->
         <div class="flex items-center justify-between px-6 pt-10 pb-4 shrink-0 border-b border-black/5 bg-diary-paper/90 backdrop-blur-sm z-20">
             <button onclick="document.getElementById('diary-compose-modal').classList.add('translate-y-full')" class="text-xs font-bold opacity-60 tracking-widest text-[#2c2c2c] active:scale-90">放弃</button>
@@ -2421,7 +2602,7 @@ body, html {
      <!-- =========================================================
      【UI组件与逻辑 - App：Chat 通讯 (单聊/气泡)】开始
      ========================================================= -->
-<div id="app-chat" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-[var(--bg-paper)] z-[60] flex flex-col transition-transform duration-500 translate-y-full box-border pb-4 overflow-hidden">
+<div id="app-chat" class="absolute inset-0 w-full h-full max-w-sm mx-auto bg-[var(--bg-paper)] z-[60] flex flex-col translate-y-full box-border pb-4 overflow-hidden">
     
 <!-- 头部：现代超大字体与无文字图标切换排版 -->
 <div class="flex flex-col shrink-0 pt-8 px-5 relative z-10 bg-[var(--bg-paper)]">
@@ -2504,7 +2685,7 @@ body, html {
     </div>
 
     <!-- 添加联系人抽屉 (仪式感) -->
-    <div id="chat-add-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[110] hidden flex flex-col transition-transform translate-y-full duration-300">
+    <div id="chat-add-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[110] hidden flex flex-col translate-y-full">
         <div class="modal-header-base"> <!-- ✨ 使用了我们新的通用头部类 -->
             <button onclick="closeAddContactModal()" class="absolute left-4 btn-circle-icon lg"> <!-- ✨ 使用了新的圆形按钮类 -->
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -2519,7 +2700,7 @@ body, html {
     </div>
 
     <!-- ================= 聊天室内页 (绝对定位盖住列表) ================= -->
-    <div id="chat-room-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[110] hidden flex flex-col transition-transform translate-x-full duration-300">
+    <div id="chat-room-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[110] hidden flex flex-col translate-x-full">
         
 <!-- 聊天室头部 (纯净 CSS 接管版) -->
 <div id="chat-room-header" class="chat-header-base header-pointer-none">
@@ -2632,7 +2813,7 @@ body, html {
 
             <!-- 表情包管理/导入弹窗 -->
             <div id="sticker-manager-modal" class="absolute inset-0 bg-black/40 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center px-6 transition-opacity">
-                <div class="sketch-box shape-2 bg-paper p-6 w-full max-w-[20rem] flex flex-col shadow-2xl border-solid border-ink-1">
+                <div class="rounded-2xl shadow-sm bg-paper p-6 w-full max-w-[20rem] flex flex-col shadow-2xl border-solid border-ink-1">
                     <h3 class="font-bold text-sm mb-4 border-b pb-2 tracking-widest text-center border-light-1 text-ink">表情包管理枢纽</h3>
                     <div class="flex flex-col space-y-3 mb-4">
                         <input type="text" id="sticker-group-name" class="p-2 border outline-none text-xs bg-white/50 border-ink text-ink" placeholder="分组名称 (如: 傲娇猫猫)">
@@ -2725,7 +2906,7 @@ body, html {
     </div> <!-- 👈 补上这个救命的闭合标签 -->
     
         <!-- ================= 聊天记录搜索面板 (全局顶层) ================= -->
-    <div id="chat-search-modal" class="fixed inset-0 bg-[var(--bg-paper)] z-[9999] hidden flex flex-col transition-transform translate-y-full duration-300">
+    <div id="chat-search-modal" class="fixed inset-0 bg-[var(--bg-paper)] z-[9999] hidden flex flex-col translate-y-full">
         <!-- ✨ 使用基础头部 + 毛玻璃效果 -->
         <div class="modal-header-base bg-white/80 backdrop-blur-md">
             <button onclick="window.closeChatSearchModal()" class="btn-circle-icon">
@@ -2744,7 +2925,7 @@ body, html {
     </div>
 
     <!-- ================= 搜索上下文面板 (全局顶层) ================= -->
-    <div id="chat-context-modal" class="fixed inset-0 bg-[var(--bg-paper)] z-[9999] hidden flex flex-col transition-transform translate-x-full duration-300">
+    <div id="chat-context-modal" class="fixed inset-0 bg-[var(--bg-paper)] z-[9999] hidden flex flex-col translate-x-full">
         <div class="modal-header-base bg-white/80 backdrop-blur-md">
             <button onclick="window.closeChatContextModal()" class="absolute left-4 btn-circle-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -2757,7 +2938,7 @@ body, html {
     </div>
     
 <!-- ================= 聊天设置面板 (打乱重组：硬核手账设定表风格) ================= -->
-<div id="chat-settings-modal" class="absolute inset-0 z-[120] hidden flex flex-col transition-transform translate-y-full duration-300 bg-paper">
+<div id="chat-settings-modal" class="absolute inset-0 z-[120] hidden flex flex-col translate-y-full bg-paper">
     
     <!-- 头部：票据剪切线风格 -->
     <div class="flex items-center justify-between px-5 pt-6 pb-4 border-b-[2px] border-dashed shrink-0 bg-white/50 border-ink">
@@ -2773,7 +2954,7 @@ body, html {
     <!-- 内容区：点阵背景 + 错落排版 -->
     <div class="flex-1 overflow-y-auto custom-scrollbar px-5 py-6 flex flex-col space-y-6 pb-8 tm-texture-dots-sm">
         
-        <div class="sketch-box shape-2 p-4 pt-5 bg-white/80 border-solid flex flex-col space-y-4 shadow-sm tm-box-2px">
+        <div class="rounded-2xl shadow-sm p-4 pt-5 bg-white/80 border-solid flex flex-col space-y-4 shadow-sm tm-box-2px">
             <!-- 聊天背景 -->
             <div class="flex space-x-2 relative mb-3">
                 <button class="flex-1 echo-btn-sm-outline" onclick="document.getElementById('chat-bg-upload').click()">更换聊天背景</button>
@@ -2808,14 +2989,14 @@ body, html {
                     <!-- 对方气泡 -->
                     <div class="flex justify-start items-end space-x-2 mt-2 w-full relative z-10">
                         <div class="w-6 h-6 rounded-full border bg-white flex items-center justify-center shrink-0 border-light-1"><span class="text-[8px] font-bold opacity-50 text-ink">TA</span></div>
-                        <div id="preview-ta-bubble" class="msg-type-text px-3 py-1.5 text-[11px] shadow-sm max-w-[80%]" style="background-color: white; color: var(--ink); border: 1px solid var(--ink-light); border-radius: 12px 12px 12px 2px;">
+                        <div id="preview-ta-bubble" class="msg-type-text px-3 py-1.5 text-[11px] shadow-sm max-w-[80%] preview-ta-base">
                             这是 TA 发来的气泡，试试用CSS改变。
                         </div>
                     </div>
                     
                     <!-- 我的气泡 -->
                     <div class="flex justify-end items-end space-x-2 w-full relative z-10">
-                        <div id="preview-my-bubble" class="msg-type-text px-3 py-1.5 text-[11px] shadow-sm max-w-[80%]" style="background-color: var(--ink); color: var(--bg-paper); border-radius: 12px 12px 2px 12px;">
+                        <div id="preview-my-bubble" class="msg-type-text px-3 py-1.5 text-[11px] shadow-sm max-w-[80%] preview-my-base">
                             这是我发出的气泡，支持实时预览！
                         </div>
                         <div class="w-6 h-6 rounded-full border bg-white flex items-center justify-center shrink-0 border-light-1"><span class="text-[8px] font-bold opacity-50 text-ink">我</span></div>
@@ -2825,10 +3006,10 @@ body, html {
         </div>
 
         <!-- 区块二：身份与指令 -->
-        <div class="sketch-box shape-1 p-4 bg-white/80 border-solid shadow-sm flex flex-col space-y-4 tm-box-2px">
+        <div class="rounded-2xl shadow-sm p-4 bg-white/80 border-solid shadow-sm flex flex-col space-y-4 tm-box-2px">
             <div class="echo-setting-col">
                 <span class="text-xs font-bold text-ink">玩家身份设定</span>
-                <div class="relative w-full mt-1 sketch-parent">
+                <div class="relative w-full mt-1 ">
                     <select id="chat-me-select" class="w-full bg-transparent outline-none text-[11px] appearance-none cursor-pointer text-ink" onchange="window.saveChatMeSelect()">
                         <option value="">-- 使用默认档案 --</option>
                     </select>
@@ -2850,7 +3031,7 @@ body, html {
         </div>
 
         <!-- 区块三：记忆与自动化设置 -->
-        <div class="sketch-box shape-3 border-solid p-4 bg-white/90 shadow-sm tm-box-2px">
+        <div class="rounded-2xl shadow-sm border-solid p-4 bg-white/90 shadow-sm tm-box-2px">
             <div class="flex items-center justify-between mb-4 border-b-2 pb-2 border-ink">
                 <div class="flex items-center space-x-2">
                     <div class="w-2 h-4 bg-ink"></div>
@@ -2910,7 +3091,7 @@ body, html {
         </div>
 
         <!-- 区块四：危险操作区 -->
-        <div class="p-5 sketch-box shape-1 flex flex-col space-y-4 danger-zone-box">
+        <div class="p-5 rounded-2xl shadow-sm flex flex-col space-y-4 danger-zone-box">
             
             <div class="flex items-center justify-between">
                 <span class="text-[13px] font-black tracking-widest danger-text-primary">账号与记录管理</span>
@@ -2918,10 +3099,10 @@ body, html {
             </div>
             
             <div class="flex flex-col space-y-3">
-                <button class="w-full py-2.5 font-bold text-xs active:scale-95 transition-transform tracking-widest sketch-box shape-2 danger-btn-solid" onclick="window.clearCurrentChatHistory()">清 空 聊 天 记 录</button>
+                <button class="w-full py-2.5 font-bold text-xs active:scale-95 transition-transform tracking-widest rounded-2xl shadow-sm danger-btn-solid" onclick="window.clearCurrentChatHistory()">清 空 聊 天 记 录</button>
                 <div class="flex space-x-3">
-                    <button id="btn-chat-block" class="flex-1 py-2 font-bold text-xs active:scale-95 transition-transform sketch-box shape-3 danger-btn-outline" onclick="window.blockChatContact()">拉黑联系人</button>
-                    <button id="btn-chat-delete" class="flex-1 py-2 font-bold text-xs active:scale-95 transition-transform sketch-box shape-1 danger-btn-outline" onclick="window.deleteChatContact()">删除联系人</button>
+                    <button id="btn-chat-block" class="flex-1 py-2 font-bold text-xs active:scale-95 transition-transform rounded-2xl shadow-sm danger-btn-outline" onclick="window.blockChatContact()">拉黑联系人</button>
+                    <button id="btn-chat-delete" class="flex-1 py-2 font-bold text-xs active:scale-95 transition-transform rounded-2xl shadow-sm danger-btn-outline" onclick="window.deleteChatContact()">删除联系人</button>
                 </div>
             </div>
         </div>
@@ -2930,7 +3111,7 @@ body, html {
 </div>
 
 <!-- ================= 独立记忆管理面板 (美化版) ================= -->
-<div id="chat-memory-modal" class="absolute inset-0 z-[130] hidden flex flex-col transition-transform translate-y-full duration-300 bg-paper">
+<div id="chat-memory-modal" class="absolute inset-0 z-[130] hidden flex flex-col translate-y-full bg-paper">
     
     <!-- 头部：手账风 -->
     <div class="flex items-center justify-between px-5 pt-6 pb-4 border-b-[2px] border-dashed shrink-0 bg-white/50 relative z-20border-ink">
@@ -2953,14 +3134,14 @@ body, html {
     <div id="chat-memory-main-view" class="flex-1 min-h-0 flex flex-col relativetm-texture-dots-sm">
         <!-- 手动合并区块美化 -->
         <div class="w-full px-5 pt-6 pb-4 shrink-0">
-            <div class="sketch-box shape-1 p-4 bg-white/90 border-2 shadow-sm flex flex-col items-center border-ink">
+            <div class="rounded-2xl shadow-sm p-4 bg-white/90 border-2 shadow-sm flex flex-col items-center border-ink">
                 <span class="text-[12px] font-bold tracking-widest mb-1 text-ink">记忆提炼协议</span>
                 <p class="text-[9px] opacity-50 text-center mb-4 leading-relaxed text-ink">可将近期<span class="font-bold">未总结的对话</span>立刻提取为卡片<br>或将历史<span class="font-bold">所有零散卡片</span>合并成一篇长文</p>
                 <div class="flex space-x-3 w-full">
-                    <button id="btn-manual-summary" onclick="window.triggerManualSummary()" class="flex-1 py-2.5 sketch-box shape-2 font-bold text-[11px] bg-white border-2 active:scale-95 transition-transform border-ink text-ink" >
+                    <button id="btn-manual-summary" onclick="window.triggerManualSummary()" class="flex-1 py-2.5 rounded-2xl shadow-sm font-bold text-[11px] bg-white border-2 active:scale-95 transition-transform border-ink text-ink" >
                         提取近期对话
                     </button>
-                    <button id="btn-merge-memories" onclick="window.mergeAllChatMemories()" class="flex-1 py-2.5 sketch-box shape-3 font-bold text-[11px] bg-[var(--ink)] text-[var(--bg-paper)] shadow-md active:scale-95 transition-transform">
+                    <button id="btn-merge-memories" onclick="window.mergeAllChatMemories()" class="flex-1 py-2.5 rounded-2xl shadow-sm font-bold text-[11px] bg-[var(--ink)] text-[var(--bg-paper)] shadow-md active:scale-95 transition-transform">
                         全 局 合 并
                     </button>
                 </div>
@@ -2979,10 +3160,10 @@ body, html {
     </div>
 
     <!-- 内部设置页面 (从右侧滑出) -->
-    <div id="chat-memory-settings-view" class="absolute inset-0 bg-[var(--bg-paper)] z-30 transition-transform translate-x-full duration-300 flex flex-col pt-32 tm-texture-dots-sm">
+    <div id="chat-memory-settings-view" class="absolute inset-0 bg-[var(--bg-paper)] z-30 translate-x-full flex flex-col pt-32 tm-texture-dots-sm">
         <div class="flex-1 overflow-y-auto custom-scrollbar px-5 pb-12 flex flex-col space-y-5">
             
-            <div class="sketch-box shape-2 p-5 bg-white/90 border-2 shadow-sm flex flex-col space-y-4border-ink">
+            <div class="rounded-2xl shadow-sm p-5 bg-white/90 border-2 shadow-sm flex flex-col space-y-4border-ink">
                 <div class="border-b-2 border-dashed pb-2 flex items-center space-x-2 border-light-1">
                     <span class="text-sm font-black tracking-widest text-ink">自动提炼参数</span>
                 </div>
@@ -3011,13 +3192,13 @@ body, html {
 </div>
             </div>
 
-            <button onclick="window.toggleChatMemorySettings()" class="sketch-box shape-1 w-full py-3 font-bold bg-white/80 border-2 active:scale-95 transition-transform tracking-widestborder-ink text-ink" >保 存 并 返 回</button>
+            <button onclick="window.toggleChatMemorySettings()" class="rounded-2xl shadow-sm w-full py-3 font-bold bg-white/80 border-2 active:scale-95 transition-transform tracking-widestborder-ink text-ink" >保 存 并 返 回</button>
         </div>
     </div>
 </div>
 
 <!-- ================= ECHO 专属：音频波段通讯系统 ================= -->
-<div id="phone-app-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[130] hidden flex flex-col transition-transform translate-y-full duration-300">
+<div id="phone-app-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[130] hidden flex flex-col translate-y-full">
     <div id="phone-top-header" class="flex items-center justify-between px-6 pt-8 pb-4 shrink-0 border-b border-[var(--ink-light)]">
         <div class="flex flex-col">
             <span class="text-[10px] font-mono opacity-50 tracking-[0.2em] text-ink">AUDIO UPLINK</span>
@@ -3034,16 +3215,16 @@ body, html {
 
     <!-- 主页 -->
     <div id="phone-home-view" class="flex-1 flex flex-col px-6 pt-8 pb-6 relative">
-        <div class="w-[92%] self-start relative cursor-pointer sketch-parent active:scale-95 transition-all z-10" onclick="startPhoneCall()">
-            <div class="sketch-box shape-2 w-full p-6 pb-12 flex flex-col items-start bg-white/70 shadow-sm border-2 overflow-hidden relative border-ink">
+        <div class="w-[92%] self-start relative cursor-pointer  active:scale-95 transition-all z-10" onclick="startPhoneCall()">
+            <div class="rounded-2xl shadow-sm w-full p-6 pb-12 flex flex-col items-start bg-white/70 shadow-sm border-2 overflow-hidden relative border-ink">
                 <span class="text-[10px] font-mono border border-ink bg-ink text-paper px-2 py-0.5 mb-8 tracking-widest">SIGNAL READY</span>
                 <span class="text-3xl font-black tracking-widest mb-1 text-ink">接入频段</span>
                 <span class="text-xs opacity-60 font-serif italic text-ink">Establish Voice Connection</span>
             </div>
         </div>
 
-        <div class="w-[80%] self-end relative cursor-pointer sketch-parent active:scale-95 transition-all -mt-6 z-20" onclick="openPhoneHistory()">
-            <div class="sketch-box shape-1 w-full p-5 flex flex-col items-end justify-center bg-white/95 shadow-lg border border-solid border-ink">
+        <div class="w-[80%] self-end relative cursor-pointer  active:scale-95 transition-all -mt-6 z-20" onclick="openPhoneHistory()">
+            <div class="rounded-2xl shadow-sm w-full p-5 flex flex-col items-end justify-center bg-white/95 shadow-lg border border-solid border-ink">
                 <span class="text-lg font-bold tracking-widest mb-1 text-ink">通讯存卷</span>
                 <span class="text-[9px] opacity-40 font-mono tracking-widest uppercase text-ink">Comm Archives</span>
             </div>
@@ -3074,7 +3255,7 @@ body, html {
         </div>
         <div id="call-subtitles-area" class="flex-1 w-full overflow-y-auto custom-scrollbar px-6 pt-4 pb-4 flex flex-col space-y-4 tm-texture-lines"></div>
         <div class="w-full p-4 bg-[var(--bg-paper)] shrink-0 z-20 border-t border-[var(--ink-light)] shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
-            <div class="p-2 flex items-center space-x-2 bg-white/80 backdrop-blur-md sketch-box shape-3 border border-[var(--ink)] shadow-md">
+            <div class="p-2 flex items-center space-x-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-[var(--ink)] shadow-md">
                 <input type="text" id="call-input-text" class="flex-1 p-2 bg-transparent outline-none text-sm font-bold text-ink" placeholder="Input audio script...">
                 <button onclick="sendCallMessage()" class="w-10 h-10 flex items-center justify-center active:scale-90 transition-transform opacity-80 text-ink"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                 <button onclick="hangupCall()" class="w-10 h-10 flex items-center justify-center active:scale-90 border-l border-[var(--ink-light)] pl-2 ml-1 text-red-600 transition-transform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"></path></svg></button>
@@ -6042,7 +6223,9 @@ async function renderChatContacts() {
     });
 
     const myContacts = chars.filter(c => contactsIds.includes(c.id));
-    let htmlContent = '';
+    let htmlContent = '<style>\n';
+    myContacts.forEach(c => { if(c.avatar) htmlContent += `.avatar-list-${c.id} { background-image: url('${c.avatar}'); background-size: cover; background-position: center; }\n`; });
+    htmlContent += '</style>\n';
 
     if (myContacts.length === 0) {
         container.innerHTML = `<div class="text-center opacity-40 text-xs font-bold tracking-widest mt-20 relative z-10">[ 通讯录为空，点击右上角建立连接 ]</div>`;
@@ -6056,7 +6239,7 @@ async function renderChatContacts() {
     myContacts.forEach((char, index) => {
         const remarkName = localStorage.getItem('oc_phone_chat_remark_' + char.id);
         const displayName = remarkName ? remarkName : char.name; 
-        const avatarHtml = char.avatar ? `<img src="${char.avatar}" class="w-full h-full object-cover">` : `<span class="text-lg font-bold opacity-50 text-ink">${displayName.substring(0,1)}</span>`;
+        const avatarHtml = char.avatar ? `<div class="w-full h-full avatar-list-${char.id}"></div>` : `<span class="text-lg font-bold opacity-50 text-ink">${displayName.substring(0,1)}</span>`;
         const promptPreview = char.prompt.substring(0, 15) + '...';
 
         if (style === 'memo') {
@@ -6158,8 +6341,6 @@ async function renderChatRecent() {
     });
 
     let scrapbookIndex = 0;
-    htmlContent += (style === 'scrapbook') ? `<div class="w-full flex flex-wrap gap-y-5 gap-x-[3%] px-4 pt-8 z-10 relative">` : `<div class="w-full flex flex-col pt-8 z-10 relative">`;
-
     let chatList = [];
     for (let char of chars) {
         const chatKey = 'oc_phone_chat_' + char.id;
@@ -6180,6 +6361,13 @@ async function renderChatRecent() {
     }
 
     chatList.sort((a, b) => b.timestamp - a.timestamp);
+
+    let avatarStyleBlock = '<style>\n';
+    chatList.forEach(item => { if(item.char && item.char.avatar) avatarStyleBlock += `.avatar-recent-${item.char.id} { background-image: url('${item.char.avatar}'); background-size: cover; background-position: center; }\n`; });
+    avatarStyleBlock += '</style>\n';
+    
+    htmlContent += avatarStyleBlock;
+    htmlContent += (style === 'scrapbook') ? `<div class="w-full flex flex-wrap gap-y-5 gap-x-[3%] px-4 pt-8 z-10 relative">` : `<div class="w-full flex flex-col pt-8 z-10 relative">`;
 
     function formatListTime(ts) {
         if (!ts) return '';
@@ -6214,7 +6402,7 @@ async function renderChatRecent() {
         if (isGroup) {
             onclickStr = `window.openGroupChatWindow('${char.id}')`;
             displayName = `${char.name} <span class="ml-1 px-1.5 py-[1px] bg-ink text-paper rounded-[3px] text-[8px] font-black tracking-widest inline-block align-middle opacity-80 transform -translate-y-[1px]">GROUP</span>`;
-            avatarHtml = char.avatar ? `<img src="${char.avatar}" class="w-full h-full object-cover">` : `<div class="chat-list-text-primary w-full h-full flex items-center justify-center font-bold opacity-60 text-lg bg-black/5">群</div>`;
+            avatarHtml = char.avatar ? `<div class="w-full h-full avatar-recent-${char.id}"></div>` : `<div class="chat-list-text-primary w-full h-full flex items-center justify-center font-bold opacity-60 text-lg bg-black/5">群</div>`;
             let senderName = lastMsg.role === 'user' ? 'Me' : (lastMsg.speakerName || '群员');
             if (lastMsg.msgType === 'system' || lastMsg.msgType === 'poke') senderName = '系统';
             prefix = `[${senderName}] `;
@@ -6222,7 +6410,7 @@ async function renderChatRecent() {
             const remarkName = localStorage.getItem('oc_phone_chat_remark_' + char.id);
             displayName = remarkName ? remarkName : char.name;
             onclickStr = `openChatRoom('${char.id}', '${displayName}')`;
-            avatarHtml = char.avatar ? `<img src="${char.avatar}" class="w-full h-full object-cover">` : `<span class="text-lg font-bold opacity-50 text-ink">${displayName.substring(0,1)}</span>`;
+            avatarHtml = char.avatar ? `<div class="w-full h-full avatar-recent-${char.id}"></div>` : `<span class="text-lg font-bold opacity-50 text-ink">${displayName.substring(0,1)}</span>`;
             const isMe = lastMsg.role === 'user';
             prefix = isMe ? '[ Send ] ' : '[ Recv ] ';
         }
@@ -6363,6 +6551,11 @@ async function renderAddContactList() {
     
     const unadded = chars.filter(c => !contactsIds.includes(c.id) && c.type !== 'me');
     
+    let avatarStyleBlock = '<style>\n';
+    unadded.forEach(c => { if(c.avatar) avatarStyleBlock += `.avatar-add-${c.id} { background-image: url('${c.avatar}'); background-size: cover; background-position: center; }\n`; });
+    avatarStyleBlock += '</style>\n';
+    container.innerHTML = avatarStyleBlock;
+
     if (unadded.length === 0) {
         container.innerHTML = '<div class="text-center opacity-40 text-xs mt-10 font-bold tracking-widest">[ 暂无未连接信号 ]</div>';
         return;
@@ -6380,7 +6573,7 @@ el.onclick = async () => {
     renderChatContacts();
 };
 
-const avatarHtml = char.avatar ? `<img src="${char.avatar}" class="w-full h-full object-cover">` : `<span class="text-lg font-bold opacity-50 text-[var(--ink)]">${char.name.substring(0,1)}</span>`;
+const avatarHtml = char.avatar ? `<div class="w-full h-full avatar-add-${char.id}"></div>` : `<span class="text-lg font-bold opacity-50 text-[var(--ink)]">${char.name.substring(0,1)}</span>`;
 
 el.innerHTML = `
     <div class="w-11 h-11 rounded-full mr-4 flex items-center justify-center overflow-hidden shrink-0 relative z-10 p-[2px] avatar-box-border">
@@ -7785,7 +7978,7 @@ if (msg.msgType === 'revoke' && msg.revokedContent) {
                 </div>
                 
                 <!-- 撤回提示文字 -->
-                <span ${sysTouchAttr} onclick="window.handleBubbleClick(event, ${absoluteIndex})" class="text-[11px] font-bold opacity-50 px-3 py-1 bg-black/5 rounded-full select-none" style="color: var(--ink); border: 1px solid var(--ink-light);">${msg.content}</span>
+                <span ${sysTouchAttr} onclick="window.handleBubbleClick(event, ${absoluteIndex})" class="text-[11px] font-bold opacity-50 px-3 py-1 bg-black/5 rounded-full select-none" class="text-ink border border-ink-light">${msg.content}</span>
             </div>
             
             <!-- 下方隐藏的真实内容 (改成虚线框，更像被还原的草稿) -->
@@ -7807,7 +8000,7 @@ if (msg.msgType === 'revoke' && msg.revokedContent) {
             </div>
             <div class="text-[8px] opacity-30 mt-2 mb-3">(按住可偷看真实内容)</div>
             <div class="flex w-full space-x-3 mt-1 border-t border-dashed pt-4" class="chat-scrapbook-photo">
-                <button onclick="window.rejectBlockVerify(${absoluteIndex})" class="flex-1 py-2 rounded-[8px] text-[11px] font-bold opacity-50 active:scale-95 transition-transform border bg-black/5" style="color: var(--ink); border-color: transparent;">忽 略</button>
+                <button onclick="window.rejectBlockVerify(${absoluteIndex})" class="flex-1 py-2 rounded-[8px] text-[11px] font-bold opacity-50 active:scale-95 transition-transform border bg-black/5 text-ink border-transparent">忽 略</button>
                 <button onclick="window.acceptBlockVerify('${currentChatId}', ${absoluteIndex})" class="flex-1 py-2 rounded-[8px] text-[11px] font-bold bg-[var(--ink)] text-[var(--bg-paper)] active:scale-95 transition-transform shadow-md">同 意 连 接</button>
             </div>
         </div>`;
@@ -7832,7 +8025,7 @@ if (msg.msgType === 'revoke' && msg.revokedContent) {
 let pureStickerUrl = null;
 
 // 【修复防闪烁】：在文字变成 HTML 前直接替换翻译框，不要事后去改 DOM 导致闪屏
-textContent = textContent.replace(/\[(?:译|翻译|EN|En|Eng)[:：]\s*([\s\S]*?)\]/gi, '<div class="bilingual-trans" style="display:none; margin-top:12px; font-size:0.88em; opacity:0.65; letter-spacing:0.02em;">$1</div>');
+textContent = textContent.replace(/\[(?:译|翻译|EN|En|Eng)[:：]\s*([\s\S]*?)\]/gi, '<div class="bilingual-trans hidden-trans">$1</div>');
 
 // 【拦截表情包代码，转为图片】
 if (typeof window.findStickerUrl === 'function') {
@@ -7840,7 +8033,7 @@ if (typeof window.findStickerUrl === 'function') {
         const url = window.findStickerUrl(name.trim());
         if (url) {
             if (textContent.trim() === match) { pureStickerUrl = url; return ""; }
-            return `<img src="${url}" class="inline-block align-middle mx-1 shadow-sm border border-[var(--ink-light)]" style="width:80px; height:80px; object-fit:contain; background:white; border-radius:8px;">`;
+            return `<img src="${url}" class="inline-block align-middle mx-1 shadow-sm border border-ink-light bubble-inline-sticker">`;
         }
         return `<span class="opacity-50 italic text-[10px]">（发送表情：${name}）</span>`;
     });
@@ -7957,9 +8150,9 @@ displayContent = `
 `;
     
     myBubbleClass = `msg-type-diary-invite relative flex items-center justify-center w-fit`;
-    myBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    myBubbleStyle = ``;
     taBubbleClass = `msg-type-diary-invite relative flex items-center justify-center w-fit`;
-    taBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    taBubbleStyle = ``;
 }
 
 else if (msg.msgType === 'survey_reply') {
@@ -7988,9 +8181,9 @@ displayContent = `
 `;
     
     myBubbleClass = `msg-type-survey-reply relative flex items-center justify-center w-fit`;
-    myBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    myBubbleStyle = ``;
     taBubbleClass = `msg-type-survey-reply relative flex items-center justify-center w-fit`;
-    taBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    taBubbleStyle = ``;
 }
 
 else if (msg.msgType === 'survey') {
@@ -8022,9 +8215,9 @@ displayContent = `
 `;
     
     myBubbleClass = `msg-type-survey relative flex items-center justify-center w-fit`;
-    myBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    myBubbleStyle = ``;
     taBubbleClass = `msg-type-survey relative flex items-center justify-center w-fit`;
-    taBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    taBubbleStyle = ``;
 }
 else if (msg.msgType === 'capsule_forward') {
     const data = msg.capsuleData || {};
@@ -8080,7 +8273,7 @@ displayContent = `
         </svg>
         <span class="text-[8px] font-mono tracking-[0.2em] opacity-30 mb-2 uppercase">IMG_DECODED</span>
         
-        <div class="text-[12px] font-bold text-left leading-relaxed opacity-80 w-full" style="text-indent: 0 !important;">
+        <div class="text-[12px] font-bold text-left leading-relaxed opacity-80 w-full" class="text-[12px] font-bold text-left leading-relaxed opacity-80 w-full no-indent">
             ${safeContent}
         </div>
     </div>
@@ -8088,9 +8281,9 @@ displayContent = `
     
     // 剥夺所有背景色、边框和内边距 (保留刚才我们改过的这里)
     myBubbleClass = `msg-type-fake-img relative flex items-center justify-center w-fit`;
-    myBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    myBubbleStyle = ``;
     taBubbleClass = `msg-type-fake-img relative flex items-center justify-center w-fit`;
-    taBubbleStyle = `background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;`;
+    taBubbleStyle = ``;
 }
 
 else {
@@ -8228,13 +8421,13 @@ let roleHtml = '';
 if (groupOwner === 'me' || groupOwner === savedMeId) {
     roleHtml = `<span class="text-[8px] font-black px-1 rounded-[2px] mr-1 shadow-sm" class="chat-tag-active">群主</span>`;
 } else if (groupAdmins.includes('me') || groupAdmins.includes(savedMeId)) {
-    roleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm border opacity-80" style="border-color: var(--ink); color: var(--ink);">管理</span>`;
+    roleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm border opacity-80 border-ink text-ink">管理</span>`;
 }
 
         let titleHtml = '';
         if (currentGroup.titles) {
             const t = currentGroup.titles[savedMeId];
-            if (t) titleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm opacity-60 bg-black/5 border" style="border-color: var(--ink-light); color: var(--ink);">${t}</span>`;
+            if (t) titleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm opacity-60 bg-black/5 border border-ink-light text-ink">${t}</span>`;
         }
         
         mySpeakerLabelHtml = `<div class="bubble-speaker-name justify-end mr-1">${roleHtml}${titleHtml}${myName}</div>`;
@@ -8285,13 +8478,13 @@ if (window.currentChatGroupId) {
         if (currentGroup.owner === sId) {
             roleHtml = `<span class="text-[8px] font-black px-1 rounded-[2px] mr-1 shadow-sm" class="chat-tag-active">群主</span>`;
         } else if (currentGroup.admins && currentGroup.admins.includes(sId)) {
-            roleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm border opacity-80" style="border-color: var(--ink); color: var(--ink);">管理</span>`;
+            roleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm border opacity-80 border-ink text-ink">管理</span>`;
         }
 
         // 群称号 (更淡的背景框)
         if (currentGroup.titles) {
             const t = currentGroup.titles[sId];
-            if (t) titleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm opacity-60 bg-black/5 border" style="border-color: var(--ink-light); color: var(--ink);">${t}</span>`;
+            if (t) titleHtml = `<span class="text-[8px] font-bold px-1 rounded-[2px] mr-1 shadow-sm opacity-60 bg-black/5 border border-ink-light text-ink">${t}</span>`;
         }
     }
 }
@@ -8703,20 +8896,20 @@ if (iGrabbed) {
                 <span class="text-xl mr-1 font-bold opacity-60 shrink-0">¥</span><span class="truncate">${iGrabbed.amount.toFixed(2)}</span>
             </div>
             <div class="px-4 py-1 rounded-full bg-black/5 text-[9px] tracking-widest opacity-60 font-bold shrink-0" class="chat-list-text-primary">已 存 入 余 额</div>
-            <div class="w-full mt-4 flex-1 overflow-y-auto custom-scrollbar" style="overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">${listHtml}</div>
+            <div class="w-full mt-4 flex-1 overflow-y-auto custom-scrollbar overscroll-contain-touch">${listHtml}</div>
         </div>`;
 } else if (isEmpty) {
     stateHtml = `
         <div id="rp-empty" class="w-full flex flex-col items-center z-10 flex-1 h-0">
             <div class="font-bold text-lg tracking-widest mt-6 mb-2 opacity-60 shrink-0" class="chat-list-text-primary">手慢了，红包派完了</div>
-            <div class="w-full mt-4 flex-1 overflow-y-auto custom-scrollbar" style="overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">${listHtml}</div>
+            <div class="w-full mt-4 flex-1 overflow-y-auto custom-scrollbar overscroll-contain-touch">${listHtml}</div>
         </div>`;
 } else {
     stateHtml = `
         <div id="rp-unopened" class="w-full flex flex-col items-center justify-center flex-1 transition-all duration-500 z-20 pb-4">
             <span class="text-[9px] font-mono tracking-[0.2em] opacity-40 mb-6 uppercase" class="chat-list-text-primary">Tap to Unpack</span>
             <button onclick="window.claimRedPacket(${msgIndex}, '${senderName}', '${myName}')" 
-                class="w-[72px] h-[72px] rounded-full bg-black/5 border shadow-sm flex items-center justify-center active:scale-90 transition-all hover:bg-black/10 shrink-0" style="border-color: var(--ink-light); color: var(--ink);">
+                class="w-[72px] h-[72px] rounded-full bg-black/5 border shadow-sm flex items-center justify-center active:scale-90 transition-all hover:bg-black/10 shrink-0 border-ink-light text-ink">
                 <span class="text-3xl font-black mb-1">開</span>
             </button>
         </div>
@@ -8726,7 +8919,7 @@ if (iGrabbed) {
 
 modal.innerHTML = `
     <div class="relative w-[85%] max-w-[320px] h-[450px] max-h-[80vh] rounded-[32px] shadow-[0_20px_60px_rgba(0,0,0,0.08)] flex flex-col pt-8 px-6 pb-6 transition-all duration-500 transform scale-95 overflow-hidden" 
-         style="background-color: var(--bg-paper); border: 1px solid var(--ink-light);">
+         class="relative w-[85%] max-w-[320px] h-[450px] max-h-[80vh] rounded-[32px] shadow-[0_20px_60px_rgba(0,0,0,0.08)] flex flex-col pt-8 px-6 pb-6 transition-all duration-500 transform scale-95 overflow-hidden bg-paper border border-ink-light">
              
             <button onclick="document.getElementById('rp-popup-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('rp-popup-modal').firstElementChild.classList.remove('scale-100');" 
                     class="absolute top-4 right-4 p-2 opacity-30 hover:opacity-80 active:scale-90 transition-all font-light text-2xl z-50" class="chat-list-text-primary">
@@ -8734,7 +8927,7 @@ modal.innerHTML = `
             </button>
 
             <div class="flex flex-col items-center w-full relative z-20 shrink-0">
-                <div class="w-[50px] h-[50px] rounded-[16px] border shadow-sm flex items-center justify-center overflow-hidden text-sm font-bold bg-white/50 shrink-0 mb-2" style="border-color: var(--ink-light); color: var(--ink);">
+                <div class="w-[50px] h-[50px] rounded-[16px] border shadow-sm flex items-center justify-center overflow-hidden text-sm font-bold bg-white/50 shrink-0 mb-2 border-ink-light text-ink">
                     ${avatarHtml}
                 </div>
                 <span class="text-[14px] font-bold tracking-widest" class="chat-list-text-primary">${senderName} 的红包</span>
@@ -8834,7 +9027,7 @@ if (openedContainer) {
             <span class="text-xl mr-1 font-bold opacity-60 shrink-0">¥</span><span class="truncate">${getAmount.toFixed(2)}</span>
         </div>
         <div class="px-4 py-1 rounded-full bg-black/5 text-[9px] tracking-widest opacity-60 font-bold mb-2 shrink-0" class="chat-list-text-primary">已 存 入 余 额</div>
-        <div class="w-full mt-4 flex-1 overflow-y-auto custom-scrollbar" style="overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">${listHtml}</div>`;
+        <div class="w-full mt-4 flex-1 overflow-y-auto custom-scrollbar overscroll-contain-touch">${listHtml}</div>`;
             setTimeout(() => {
                 openedContainer.classList.remove('hidden');
                 openedContainer.classList.add('flex', 'animate-fade-in-up'); 
@@ -9845,7 +10038,7 @@ window.renderChatMemories = async function() {
                 </div>
                 <div class="text-[9px] font-mono opacity-40" class="chat-list-text-primary">${dateStr}</div>
             </div>
-            <textarea id="mem-text-${mem.id || index}" class="w-full h-24 bg-black/5 p-2 outline-none text-[11px] custom-scrollbar leading-relaxed font-serif" style="color: var(--ink); border: 1px solid var(--ink-light);">${mem.content}</textarea>
+            <textarea id="mem-text-${mem.id || index}" class="w-full h-24 bg-black/5 p-2 outline-none text-[11px] custom-scrollbar leading-relaxed font-serif" class="text-ink border border-ink-light">${mem.content}</textarea>
             
             <div class="flex justify-between items-center mt-3 pt-1">
                 <button onclick="window.deleteSingleChatMemory('${mem.id || index}')" class="text-[10px] font-bold text-red-500 active:scale-90 bg-red-50 px-2 py-1 border border-red-200 sketch-box shape-3">销毁卡片</button>
@@ -16559,7 +16752,7 @@ window.importAllData = async function(event) {
 
 <!-- 多存档管理弹窗 -->
 <div id="tm-saveload-modal" class="absolute inset-0 bg-black/40 backdrop-blur-sm z-[150] hidden flex justify-center items-center px-6 transition-opacity">
-    <div class="sketch-box shape-1 bg-[var(--bg-paper)] p-5 w-full max-w-[20rem] max-h-[80vh] flex flex-col shadow-xl border-solid border-ink-1">
+    <div class="rounded-2xl shadow-sm bg-[var(--bg-paper)] p-5 w-full max-w-[20rem] max-h-[80vh] flex flex-col shadow-xl border-solid border-ink-1">
         <h3 class="font-bold text-sm mb-3 border-b  pb-2 border-light-1">时空终端 / 存档记录</h3>
         
         <!-- 存档列表容器（JS动态生成折叠面板） -->
@@ -16567,13 +16760,13 @@ window.importAllData = async function(event) {
             <!-- 存档会按角色折叠显示在这里 -->
         </div>
 
-        <button onclick="document.getElementById('tm-saveload-modal').classList.add('hidden')" class="sketch-box shape-2 px-4 py-2 font-bold bg-white/90 border-solid text-sm tracking-widest active:scale-95tm-btn-outline">关 闭</button>
+        <button onclick="document.getElementById('tm-saveload-modal').classList.add('hidden')" class="rounded-2xl shadow-sm px-4 py-2 font-bold bg-white/90 border-solid text-sm tracking-widest active:scale-95tm-btn-outline">关 闭</button>
     </div>
 </div>
      
 <!-- ================= ECHO 专属：深层心声观测面板 ================= -->
 <div id="chat-observation-modal" class="absolute inset-0 bg-black/40 backdrop-blur-sm z-[200] hidden flex flex-col items-center justify-center px-6 transition-opacity duration-300 opacity-0 pointer-events-none">
-    <div class="relative w-full max-w-[320px] sketch-box shape-2 bg-[var(--bg-paper)] shadow-2xl flex flex-col p-1 transition-transform duration-300 scale-95tm-box-2px">
+    <div class="relative w-full max-w-[320px] rounded-2xl shadow-sm bg-[var(--bg-paper)] shadow-2xl flex flex-col p-1 transition-transform duration-300 scale-95tm-box-2px">
         
         <div class="p-5 flex flex-col">
             <!-- 顶部机密标识与关闭按钮 (完美融入档案风格) -->
@@ -16634,7 +16827,7 @@ window.importAllData = async function(event) {
     </div>
 
     <!-- ================= 多选模式底部操作栏 ================= -->
-    <div id="chat-multiselect-bar" class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t z-[200] flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] transition-transform translate-y-full duration-300 border-light-1">
+    <div id="chat-multiselect-bar" class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t z-[200] flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] translate-y-full border-light-1">
         <button class="text-sm font-bold opacity-60 px-4 py-2" onclick="window.exitMultiSelect()">取消</button>
         <span id="multiselect-count" class="text-xs font-bold opacity-40">已选 0 项</span>
         <div class="flex space-x-3">
@@ -16648,7 +16841,7 @@ window.importAllData = async function(event) {
     </div>
 
 <!-- ================= 转发联系人选择弹窗 ================= -->
-<div id="chat-forward-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[200] hidden flex flex-col transition-transform translate-y-full duration-300">
+<div id="chat-forward-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[200] hidden flex flex-col translate-y-full">
     <div class="modal-header-base border-dashed border-ink">
         <!-- ✨ 替换为更干净的类名组合 -->
         <button onclick="window.closeForwardSelectModal()" class="absolute left-4 btn-circle-icon lg bg-white/50 border border-ink text-ink">
@@ -16659,16 +16852,16 @@ window.importAllData = async function(event) {
     
     <div class="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 flex flex-col tm-texture-dots-sm">
         <p class="text-[10px] opacity-60 font-bold mb-4 tracking-widest uppercase">请选择要投递记录的目标档案：</p>
-        <div id="chat-forward-list" class="flex flex-col space-y-2 pb-8 bg-white/80 p-2 sketch-box shape-1 borderborder-ink"></div>
+        <div id="chat-forward-list" class="flex flex-col space-y-2 pb-8 bg-white/80 p-2 rounded-2xl shadow-sm borderborder-ink"></div>
     </div>
 </div>
 
 <!-- ================= 转发聊天记录明细查看弹窗 ================= -->
 <div id="chat-forward-detail-modal" class="absolute inset-0 bg-black/20 backdrop-blur-sm z-[250] hidden flex justify-center items-center px-6 transition-all duration-300 opacity-0 scale-95">
-    <div class="sketch-box shape-2 bg-[var(--bg-paper)] p-5 w-full max-w-[20rem] max-h-[85vh] flex flex-col shadow-[10px_10px_0px_rgba(0,0,0,0.1)] border-solidtm-box-2px">
+    <div class="rounded-2xl shadow-sm bg-[var(--bg-paper)] p-5 w-full max-w-[20rem] max-h-[85vh] flex flex-col shadow-[10px_10px_0px_rgba(0,0,0,0.1)] border-solidtm-box-2px">
         <h3 class="font-black text-sm mb-4 border-b pb-3 flex justify-between items-center tracking-widest border-dashed border-ink">
             <span>通讯记录存卷 / ARCHIVE</span>
-            <button onclick="window.closeForwardDetailModal()" class="w-7 h-7 flex items-center justify-center font-bold active:scale-90 border sketch-box shape-1border-ink">×</button>
+            <button onclick="window.closeForwardDetailModal()" class="w-7 h-7 flex items-center justify-center font-bold active:scale-90 border rounded-2xl shadow-smborder-ink">×</button>
         </h3>
         
         <div id="chat-forward-detail-content" class="flex-1 overflow-y-auto custom-scrollbar flex flex-col pb-4 min-h-[10rem] space-y-2">
@@ -16684,7 +16877,7 @@ window.importAllData = async function(event) {
     
     
     <!-- 面板主体 -->
-    <div class="sketch-box shape-2 bg-[var(--bg-paper)] p-5 w-[260px] flex flex-col shadow-xl border-solid relative z-20 border-ink-1">
+    <div class="rounded-2xl shadow-sm bg-[var(--bg-paper)] p-5 w-[260px] flex flex-col shadow-xl border-solid relative z-20 border-ink-1">
         
         <!-- 正面：状态总览 -->
         <div id="popover-view-status" class="flex flex-col">
@@ -16706,7 +16899,7 @@ window.importAllData = async function(event) {
     <span class="text-[10px] font-mono text-right text-ink"><span id="popover-tokens" class="font-bold">0</span> Tokens</span>
 </div>
             
-            <button onclick="window.flipStatusPopover(true)" class="w-full py-2.5 sketch-box shape-1 border text-[11px] font-bold active:scale-95 transition-transform bg-white/50border-ink text-ink" >调整 TA 的作息表</button>
+            <button onclick="window.flipStatusPopover(true)" class="w-full py-2.5 rounded-2xl shadow-sm border text-[11px] font-bold active:scale-95 transition-transform bg-white/50border-ink text-ink" >调整 TA 的作息表</button>
         </div>
         
         <!-- 背面：排表设定 -->
@@ -16731,8 +16924,8 @@ window.importAllData = async function(event) {
             </div>
             
             <div class="flex space-x-2">
-                <button onclick="window.autoGenerateSchedule()" id="btn-auto-schedule" class="flex-1 py-2.5 sketch-box shape-3 border border-dashed text-[11px] font-bold active:scale-95 transition-transform bg-whiteborder-ink text-ink" >自动排表</button>
-                <button onclick="window.savePopoverSchedule()" class="flex-1 py-2.5 sketch-box shape-1 border text-[11px] font-bold active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper); border-color: var(--ink);">保 存</button>
+                <button onclick="window.autoGenerateSchedule()" id="btn-auto-schedule" class="flex-1 py-2.5 rounded-2xl shadow-sm border border-dashed text-[11px] font-bold active:scale-95 transition-transform bg-whiteborder-ink text-ink" >自动排表</button>
+                <button onclick="window.savePopoverSchedule()" class="flex-1 py-2.5 rounded-2xl shadow-sm border text-[11px] font-bold active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper); border-color: var(--ink);">保 存</button>
             </div>
         </div>
         
@@ -16754,7 +16947,7 @@ window.importAllData = async function(event) {
 </div>
 
 <!-- 2. 发起群聊面板 -->
-<div id="chat-create-group-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[160] hidden flex flex-col transition-transform translate-y-full duration-300">
+<div id="chat-create-group-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[160] hidden flex flex-col translate-y-full">
     <div class="modal-header-base"> <!-- ✨ 变干净了 -->
         <button onclick="window.closeCreateGroupModal()" class="absolute left-4 btn-circle-icon lg">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -16794,7 +16987,7 @@ window.importAllData = async function(event) {
 </div>
 
 <!-- ================= 群聊详情与管理面板 ================= -->
-<div id="group-info-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[200] hidden flex flex-col transition-transform translate-y-full duration-300">
+<div id="group-info-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[200] hidden flex flex-col translate-y-full">
     <div class="modal-header-base"> <!-- ✨ 通用 -->
         <button onclick="window.closeGroupInfoModal()" class="absolute left-4 btn-circle-icon lg">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -16805,7 +16998,7 @@ window.importAllData = async function(event) {
     <div class="flex-1 overflow-y-auto custom-scrollbar px-5 py-4 flex flex-col space-y-6tm-texture-dots">
         
         <!-- 群成员网格 -->
-        <div class="sketch-box shape-2 bg-white/90 p-4 border-solid shadow-sm border-ink-1">
+        <div class="rounded-2xl shadow-sm bg-white/90 p-4 border-solid shadow-sm border-ink-1">
             <span class="text-xs font-bold opacity-60 mb-3 block tracking-widest text-ink">群成员 (<span id="group-info-count">0</span>)</span>
             <div id="group-info-members" class="grid grid-cols-5 gap-y-4 gap-x-2 place-items-center">
                 <!-- JS 动态生成头像 -->
@@ -16813,7 +17006,7 @@ window.importAllData = async function(event) {
         </div>
 
         <!-- 资料编辑区 -->
-        <div class="sketch-box shape-1 bg-white/90 p-4 border-solid shadow-sm flex flex-col space-y-4 border-ink-1">
+        <div class="rounded-2xl shadow-sm bg-white/90 p-4 border-solid shadow-sm flex flex-col space-y-4 border-ink-1">
             <span class="text-xs font-bold opacity-60 tracking-widest border-b pb-2border-ink-light text-ink">群资料设定</span>
             
             <div class="flex items-center space-x-4">
@@ -16843,11 +17036,11 @@ window.importAllData = async function(event) {
                 <textarea id="group-info-notice" class="w-full h-20 p-2 bg-black/5 outline-none text-xs custom-scrollbar borderborder-ink-light text-ink" placeholder="输入群公告或群规则..."></textarea>
             </div>
             
-            <button onclick="window.saveGroupInfoDetails()" class="w-full py-2.5 sketch-box shape-3 font-bold text-xs active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">保存资料修改</button>
+            <button onclick="window.saveGroupInfoDetails()" class="w-full py-2.5 rounded-2xl shadow-sm font-bold text-xs active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">保存资料修改</button>
         </div>
 
         <!-- 危险操作区 -->
-        <button onclick="window.dismissGroupChat()" class="w-full py-3 sketch-box shape-2 font-bold text-xs text-red-600 bg-red-50 border border-red-200 active:scale-95 transition-transform tracking-widest">
+        <button onclick="window.dismissGroupChat()" class="w-full py-3 rounded-2xl shadow-sm font-bold text-xs text-red-600 bg-red-50 border border-red-200 active:scale-95 transition-transform tracking-widest">
             解 散 群 聊
         </button>
         <div class="h-10"></div> <!-- 底部留白 -->
@@ -16855,7 +17048,7 @@ window.importAllData = async function(event) {
 </div>
 
 <!-- ================= 邀请新成员入群弹窗 ================= -->
-<div id="group-invite-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[210] hidden flex flex-col transition-transform translate-y-full duration-300">
+<div id="group-invite-modal" class="absolute inset-0 bg-[var(--bg-paper)] z-[210] hidden flex flex-col translate-y-full">
     <div class="modal-header-base"> <!-- ✨ 变干净了 -->
         <button onclick="window.closeGroupInviteModal()" class="absolute left-4 btn-circle-icon lg">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -16867,7 +17060,7 @@ window.importAllData = async function(event) {
         <div id="group-invite-list" class="flex flex-col space-y-2 pb-8"></div>
     </div>
     <div class="p-4 border-t shrink-0 bg-white/50 border-light-1">
-        <button onclick="window.confirmInviteMembers()" class="w-full py-3 sketch-box shape-1 font-bold text-sm active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">确认邀请</button>
+        <button onclick="window.confirmInviteMembers()" class="w-full py-3 rounded-2xl shadow-sm font-bold text-sm active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">确认邀请</button>
     </div>
 </div>
 
@@ -16900,7 +17093,7 @@ window.importAllData = async function(event) {
 
 <!-- ================= 导出选项弹窗 ================= -->
 <div id="export-options-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] hidden flex flex-col items-center justify-center px-6 transition-opacity">
-    <div class="sketch-box shape-2 bg-[var(--bg-paper)] p-6 w-full max-w-[18rem] flex flex-col shadow-2xl border-solid border-ink-1">
+    <div class="rounded-2xl shadow-sm bg-[var(--bg-paper)] p-6 w-full max-w-[18rem] flex flex-col shadow-2xl border-solid border-ink-1">
         <h3 class="font-bold text-sm mb-4 border-b pb-2 tracking-widest text-center border-light-1">导出设置</h3>
         
         <div class="flex flex-col space-y-3 mb-6">
@@ -16917,9 +17110,9 @@ window.importAllData = async function(event) {
         </div>
 
         <div class="flex justify-between space-x-3">
-            <button onclick="document.getElementById('export-options-modal').classList.add('hidden')" class="sketch-box shape-1 px-4 py-2 font-bold bg-white/50 border-solid text-sm active:scale-95 flex-1 opacity-70 border-ink-1">取消</button>
+            <button onclick="document.getElementById('export-options-modal').classList.add('hidden')" class="rounded-2xl shadow-sm px-4 py-2 font-bold bg-white/50 border-solid text-sm active:scale-95 flex-1 opacity-70 border-ink-1">取消</button>
             <!-- 修复了 flex-[2]tm-btn-outline 连字的问题 -->
-            <button onclick="window.exportAllData()" id="btn-confirm-export" class="sketch-box shape-2 px-4 py-2 font-bold bg-white/90 border-solid text-sm tracking-widest active:scale-95 flex-[2] tm-btn-outline">开始导出</button>
+            <button onclick="window.exportAllData()" id="btn-confirm-export" class="rounded-2xl shadow-sm px-4 py-2 font-bold bg-white/90 border-solid text-sm tracking-widest active:scale-95 flex-[2] tm-btn-outline">开始导出</button>
         </div>
     </div>
 </div>
