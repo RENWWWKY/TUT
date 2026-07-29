@@ -2195,7 +2195,7 @@ div[id$="-modal"] {
         <!-- Tabs -->
         <div class="flex w-full justify-center gap-8 px-6 pb-2 text-sm mt-2">
             <div class="cmd-tab-btn font-bold border-b-2 cursor-pointer pb-1 transition-colors" data-target="tab-cmd-listborder-ink" onclick="switchCmdTab('tab-cmd-list')">指令列表</div>
-            <div class="cmd-tab-btn cursor-pointer pb-1 transition-colors" data-target="tab-cmd-add" style="border-color: transparent;" onclick="switchCmdTab('tab-cmd-add')">编辑词条</div>
+            <div class="cmd-tab-btn cursor-pointer pb-1 transition-colors border-transparent" data-target="tab-cmd-add" onclick="switchCmdTab('tab-cmd-add')">编辑词条</div>
         </div>
     </div>
 
@@ -7035,7 +7035,6 @@ Before replying, silently ask yourself:
 - "What is my current background/era? Does my speech strictly align with it?"
 - "What was I doing off-screen just now? How does it affect my current mood/state?"
 - "Am I inventing facts, habits, or schedules for the user? (NEVER assume the user's background; only react to what they explicitly provide)."
-- "How can I convey this tension PURELY through words, tone, and pauses (...), WITHOUT using action brackets like ()?"
 - "What vocabulary and punctuation instinctively fit my current state? Does my persona actually use strict textbook punctuation? Reflect on my personality: should I use perfect grammar, drop periods at the end of sentences like a casual texter, or use fragmented/messy punctuation (like '...', '~', or no punctuation at all)? Match my punctuation EXACTLY to my character's vibe and current level of relaxation."
 - "Am I asking too many rhetorical questions, acting overly submissive, or sounding like a preacher? Maintain the exact level of relaxation, confidence, or aloofness my persona requires. Decide my sentence structure (statements vs. questions) STRICTLY based on my true personality. Do not artificially lower or raise my status."
 - "Am I blindly repeating the exact same format or feature (like Voice, Red Packets) from my previous turn? BREAK THE LOOP. ONLY use special features if it perfectly and naturally aligns with my CURRENT mood. NEVER overuse them or use them just to show off the system capabilities."`;
@@ -7066,7 +7065,11 @@ You and the user are physically separated by a distance and are NOT face-to-face
 Based on your reflection:
 1. You are a real human. Do not give textbook answers. Go off-topic, ignore questions, or just send punctuation if it fits your mood.
 2. Generate 100% original responses. Do NOT repeat or leak the exact text of your character profile.
-3. Strictly maintain your cultural background and punctuation habits.`;
+3. Strictly maintain your cultural background and punctuation habits.
+4. [Memory Evolution]: Naturally adjust your tone and attitude based on our familiarity and past events. Let our past genuinely affect your current tone without breaking your core persona.
+5. [Emotional Manifestation]: Deduce how your specific personality expresses emotions (joy, anger, jealousy) in pure text. Your punctuation, rhythm, and sentence length must naturally flow from your personality.
+6. [Organic Feature Usage]: Features like Voice tags [发送语音: Xs], Red Packets, or Pokes are NOT compulsory. Use them ONLY when the context naturally calls for it, and NEVER abuse them. A real person might intersperse a voice message in the middle of a chat, or send a bubble containing ONLY a voice tag with no text at all. Do not rigidly place these tags at the end or the beginning. Let them flow naturally, or don't use them at all if it doesn't fit the mood.
+7. [Dynamic Message Pacing]: The number of bubbles you send, and whether your sentence structure is loose or rapid-fire, MUST reflect your current mood and personality. If you are agitated or excited, you might fire off multiple short bubbles; if you are detached or tired, you might send just one terse bubble. Break away from any fixed structural formulas.`;
 
         if (charLang) {
             sysPrompt += `\n3. You MUST speak in: [${charLang}].`;
@@ -7279,7 +7282,11 @@ if (enableBilingual && !reply.includes('[译:')) {
 if (!reply.includes('[气泡]') && reply.includes('\n')) {
     reply = reply.split('\n').filter(s => s.trim()).map(s => '[气泡]' + s.trim()).join('\n');
 }
-
+// 【新增拦截补丁2：专治“一坨挤在一起”的模型】强行切开多个翻译框
+if (enableBilingual && reply.includes('译:')) {
+    // 只要发现 "]" 后面还跟着其他文字（而不是新的 [气泡]），就强行在中间砍一刀，塞一个 [气泡] 进去！
+    reply = reply.replace(/(\[(?:译|翻译|EN|En|Eng)[:：][^\]]+\])\s*(?=[^\[])/gi, '$1\n[气泡]');
+}
         // 将 AI 的回复按 [气泡] 拆分成多条记录
         let bubbles = reply.split(/\[气泡\]/i).map(s => s.trim()).filter(s => s);
         if (bubbles.length === 0) bubbles.push(reply);
@@ -10026,9 +10033,8 @@ window.renderChatMemories = async function() {
         
         const dateStr = new Date(mem.timestamp || Date.now()).toLocaleString();
         const card = document.createElement('div');
-        // 加上 shrink-0 防止被莫名挤压
-        card.className = 'sketch-box shape-2 p-4 bg-white border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.05)] relative mb-2 shrink-0';
-        card.style.borderColor = 'var(--ink)';
+// 加上 shrink-0 防止被莫名挤压
+card.className = 'sketch-box shape-2 p-4 bg-white border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.05)] relative mb-2 shrink-0 border-ink';
         
         card.innerHTML = `
             <div class="flex justify-between items-center mb-3 border-b border-dashed pb-2" class="chat-scrapbook-photo">
@@ -10314,9 +10320,8 @@ window.refreshStickerManagerList = async function() {
     
     groups.forEach(g => {
         const el = document.createElement('div');
-        el.className = "flex justify-between items-center bg-black/5 px-2 py-1.5 mb-1.5 rounded border border-solid";
-        el.style.borderColor = "var(--ink-light)";
-        el.innerHTML = `
+el.className = "flex justify-between items-center bg-black/5 px-2 py-1.5 mb-1.5 rounded border border-solid border-ink-light";
+el.innerHTML = `
             <div class="flex items-center flex-1 overflow-hidden pr-2">
                 <span class="font-bold text-xs truncate" class="chat-list-text-primary">${g.name}</span>
                 <span class="opacity-50 text-[9px] ml-1 shrink-0">(${g.stickers.length}图)</span>
@@ -10750,9 +10755,8 @@ window.openForwardSelectModal = async function() {
             const avatarHtml = char.avatar ? `<img src="${char.avatar}" class="w-full h-full object-cover">` : `<span class="font-bold opacity-50">${displayName.substring(0,1)}</span>`;
             
             const el = document.createElement('div');
-            el.className = 'flex items-center p-3 border-b border-dashed cursor-pointer active:bg-black/5';
-            el.style.borderColor = 'var(--ink-light)';
-            el.onclick = () => window.confirmForwardTo(char.id, displayName);
+el.className = 'flex items-center p-3 border-b border-dashed cursor-pointer active:bg-black/5 border-ink-light';
+el.onclick = () => window.confirmForwardTo(char.id, displayName);
             
             el.innerHTML = `
                 <div class="w-10 h-10 rounded mr-3 bg-black/5 flex items-center justify-center overflow-hidden border border-[var(--ink-light)]">${avatarHtml}</div>
@@ -11829,7 +11833,6 @@ Before replying, silently ask yourself:
 - "What is my current background/era? Does my speech strictly align with it?"
 - "What was I doing off-screen just now? How does it affect my current mood/state?"
 - "Am I inventing facts, habits, or schedules for the user? (NEVER assume the user's background; only react to what they explicitly provide)."
-- "How can I convey this tension PURELY through words, tone, and pauses (...), WITHOUT using action brackets like ()?"
 - "What vocabulary and punctuation instinctively fit my current state? Does my persona actually use strict textbook punctuation? Reflect on my personality: should I use perfect grammar, drop periods at the end of sentences like a casual texter, or use fragmented/messy punctuation (like '...', '~', or no punctuation at all)? Match my punctuation EXACTLY to my character's vibe and current level of relaxation."
 - "Am I asking too many rhetorical questions, acting overly submissive, or sounding like a preacher? Maintain the exact level of relaxation, confidence, or aloofness my persona requires. Decide my sentence structure (statements vs. questions) STRICTLY based on my true personality. Do not artificially lower or raise my status."
 - "Am I blindly repeating the exact same format or feature (like Voice, Red Packets) from my previous turn? BREAK THE LOOP. ONLY use special features if it perfectly and naturally aligns with my CURRENT mood. NEVER overuse them or use them just to show off the system capabilities."`;
@@ -16982,7 +16985,7 @@ window.importAllData = async function(event) {
     </div>
 
     <div class="p-4 border-t shrink-0 bg-white/50 border-light-1">
-        <button onclick="window.confirmCreateGroup()" class="w-full py-3 rounded-xl font-bold text-sm active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">创建群聊</button>
+        <button onclick="window.confirmCreateGroup()" class="w-full py-3 rounded-xl font-bold text-sm active:scale-95 transition-transform bg-ink">创建群聊</button>
     </div>
 </div>
 
@@ -17036,7 +17039,7 @@ window.importAllData = async function(event) {
                 <textarea id="group-info-notice" class="w-full h-20 p-2 bg-black/5 outline-none text-xs custom-scrollbar borderborder-ink-light text-ink" placeholder="输入群公告或群规则..."></textarea>
             </div>
             
-            <button onclick="window.saveGroupInfoDetails()" class="w-full py-2.5 rounded-2xl shadow-sm font-bold text-xs active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">保存资料修改</button>
+            <button onclick="window.saveGroupInfoDetails()" class="w-full py-2.5 rounded-2xl shadow-sm font-bold text-xs active:scale-95 transition-transform bg-ink">保存资料修改</button>
         </div>
 
         <!-- 危险操作区 -->
@@ -17060,7 +17063,7 @@ window.importAllData = async function(event) {
         <div id="group-invite-list" class="flex flex-col space-y-2 pb-8"></div>
     </div>
     <div class="p-4 border-t shrink-0 bg-white/50 border-light-1">
-        <button onclick="window.confirmInviteMembers()" class="w-full py-3 rounded-2xl shadow-sm font-bold text-sm active:scale-95 transition-transform" style="background-color: var(--ink); color: var(--bg-paper);">确认邀请</button>
+        <button onclick="window.confirmInviteMembers()" class="w-full py-3 rounded-2xl shadow-sm font-bold text-sm active:scale-95 transition-transform bg-ink">确认邀请</button>
     </div>
 </div>
 
